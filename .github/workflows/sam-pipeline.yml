@@ -12,8 +12,8 @@ jobs:
           node-version: '14'
           cache: 'npm'
       - run: npm install
-      - run: npm test
       - run: npm prune --production
+      - run: npm test
       - uses: aws-actions/setup-sam@v1
       - uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -27,4 +27,3 @@ jobs:
 
 # sam deploy
       - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name sam-hello-world --s3-bucket testsiteantoine --capabilities CAPABILITY_IAM --region af-south-1
-      
