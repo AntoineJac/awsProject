@@ -12,8 +12,8 @@ jobs:
           node-version: '14'
           cache: 'npm'
       - run: npm install
-      - run: npm prune --production
       - run: npm test
+      - run: npm prune --production
       - uses: aws-actions/setup-sam@v1
       - uses: aws-actions/configure-aws-credentials@v1
         with:
