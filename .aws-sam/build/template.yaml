@@ -21,7 +21,7 @@ Resources:
       - x86_64
       Events:
         HelloWorld:
-          Type: Api
+          Type: HttpApi
           Properties:
             Path: /hello
             Method: get
@@ -41,7 +41,7 @@ Outputs:
   HelloWorldApi:
     Description: API Gateway endpoint URL for Prod stage for Hello World function
     Value:
-      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/
+      Fn::Sub: https://${MyHttpApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/
   HelloWorldFunction:
     Description: Hello World Lambda Function ARN
     Value:
