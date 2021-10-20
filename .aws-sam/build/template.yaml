@@ -7,7 +7,7 @@ Description: 'testAntoineSamConsol
   '
 Globals:
   Function:
-    Timeout: 30
+    Timeout: 3
     Runtime: nodejs14.x
     Architectures:
     - x86_64

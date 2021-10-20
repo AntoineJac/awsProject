@@ -26,12 +26,25 @@ const returnPayloadSms = (decoded) => {
   }
 }
 
-const invokeSmsApiLambda = (payloadSMS) => {
-  lambda.invoke({
-    FunctionName: "callSmsApi",
-    InvocationType: 'Event',
-    Payload: payloadSMS
-  }).promise()
+const invokeSmsApiLambda = async (payloadSMS) => {
+  const params = {
+      FunctionName: 'sam-hello-world-CallSmsApiFunction-cz6icpbBQzOj',
+      InvocationType: 'Event',
+      Payload: payloadSMS
+  };
+
+  return new Promise((resolve, reject) => {
+      lambda.invoke(params, (err,data) => {
+          if (err) {
+              console.log(err, err.stack);
+              reject(err);
+          }
+          else {
+              console.log(data);
+              resolve(data);
+          }
+      });     
+  });
 }
 
 const mcActivityExecute = async (event, context) => {
@@ -40,15 +53,18 @@ const mcActivityExecute = async (event, context) => {
       utilsLayer.processMC(event.body)
           .then((decoded) => {
               if (decoded) {
-                  const payloadSMS = returnPayloadSms(decoded);
-                  await invokeSmsApiLambda(payloadSMS);
-                  resolve({
-                      statusCode: 200,
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
-                      body: payloadSMS
+                  const payloadSMS = JSON.stringify(returnPayloadSms(decoded));
+                  invokeSmsApiLambda(payloadSMS)
+                  .then((responseData) => {
+                    resolve({
+                        statusCode: 200,
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },  
+                        body: 'SMS has been passed to the CallApiFunction'
+                    })
                   })
+                  .catch((err) => {})
               }
           })
           .catch((err) => {
