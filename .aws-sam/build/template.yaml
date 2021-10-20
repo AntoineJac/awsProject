@@ -15,6 +15,14 @@ Resources:
   HelloWorldFunction:
     Type: AWS::Serverless::Function
     Properties:
+      Policies:
+      - Statement:
+        - Effect: Allow
+          Action:
+          - lambda:InvokeAsyncs
+          - lambda:InvokeFunction
+          Resource:
+          - '*'
       Environment:
         Variables:
           mcSecret: shhhhh

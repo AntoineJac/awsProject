@@ -1,6 +1,6 @@
 const utilsLayer = require('/opt/nodejs/index');
-//const { Lambda } = require('@aws-sdk/client-lambda');
-//const lambdaClient = new Lambda({});
+const AWS = require('aws-sdk');
+const lambda = new AWS.Lambda();
 
 const returnPayloadSms = (decoded) => {
   if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
@@ -27,7 +27,7 @@ const returnPayloadSms = (decoded) => {
 }
 
 const invokeSmsApiLambda = (payloadSMS) => {
-  lambdaClient.invoke({
+  lambda.invoke({
     FunctionName: "callSmsApi",
     InvocationType: 'Event',
     Payload: payloadSMS
@@ -41,7 +41,7 @@ const mcActivityExecute = async (event, context) => {
           .then((decoded) => {
               if (decoded) {
                   const payloadSMS = returnPayloadSms(decoded);
-                  //await invokeSmsApiLambda(payloadSMS);
+                  await invokeSmsApiLambda(payloadSMS);
                   resolve({
                       statusCode: 200,
                       headers: {
