@@ -53,7 +53,8 @@ const mcActivityExecute = async (event, context) => {
       utilsLayer.processMC(event.body)
           .then((decoded) => {
               if (decoded) {
-                  const payloadSMS = JSON.stringify(returnPayloadSms(decoded));
+                  let payloadSMS = returnPayloadSms(decoded);
+                  payloadSMS = JSON.stringify(payloadSMS);
                   invokeSmsApiLambda(payloadSMS)
                   .then((responseData) => {
                     resolve({
@@ -61,10 +62,14 @@ const mcActivityExecute = async (event, context) => {
                         headers: {
                           'Content-Type': 'application/json',
                         },  
-                        body: 'SMS has been passed to the CallApiFunction'
+                        body: JSON.stringify({
+                          message: `SMS has been passed to the CallApiFunction`
+                        })
                     })
                   })
-                  .catch((err) => {})
+                  .catch((err) => {
+                    throw new utilsLayer.CustomError("Error when Invoking the SMS API Lambda Function", 401, "invokeSmsApiLambdaFunction")
+                  })
               }
           })
           .catch((err) => {
