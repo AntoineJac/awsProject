@@ -1,5 +1,18 @@
 {
+  "name": "dependencies",
+  "version": "1.0.0",
+  "description": "hello world sample for NodeJS",
+  "main": "index.js",
+  "author": "SAM CLI",
+  "license": "MIT",
   "dependencies": {
     "jsonwebtoken": "^8.5.1"
+  },
+  "scripts": {
+    "test": "mocha tests/unit/"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^8.2.1"
   }
 }

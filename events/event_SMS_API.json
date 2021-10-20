@@ -1,5 +1,5 @@
 {
-  "body": "{\"message\": \"hello world\"}",
+  "body": {"id":"154a240a-b30e-441d-9087-a23e8be46251","messageChannel":"SMS","messageContent":"This is a test that all is OK","mobileNumber":"33615327982","mobileCountryCode":"FRA","senderName":"TestMC","ContactKey":"14bc19e6-746e-42e2-a387-64708b8fbd0a"},
   "resource": "/{proxy+}",
   "path": "/path/to/resource",
   "httpMethod": "POST",
