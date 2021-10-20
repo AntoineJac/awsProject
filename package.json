@@ -6,7 +6,8 @@
   "author": "",
   "license": "MIT",
   "scripts": {
-    "test": "mocha lambdas/hello-world/tests/unit lambdas/func2/tests/unit",
+    "testMock": "mocha lambdas/hello-world/tests/unit lambdas/callSmsApi/tests/unit",
+    "test": "",
     "debug:api": "sam local start-api --debug-port 5000"
   },
   "devDependencies": {
