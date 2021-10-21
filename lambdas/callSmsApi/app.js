@@ -8,7 +8,10 @@ const templateSMS = {
   isSensitive: false,
   description: 'Message Sent by Custom Activity in Journey Builder',
   countryCode: '',
-  messageType: 'SMS',
+  messageType: '',
+  template: '',
+  characteristic: [],
+  searchIndexes: [],
   priority: '1',
   receiver: [
     {
@@ -74,6 +77,10 @@ const replaceTemplate = (data) => {
   templateSMS.id = !data.id ? generateUUID() : data.id;
   templateSMS.content = data.messageContent;
   templateSMS.countryCode = data.mobileCountryCode;
+  templateSMS.messageType = data.messageChannel;
+  templateSMS.template = data.messageTemplate;
+  templateSMS.characteristic = data.messageCharacteristic;
+  templateSMS.searchIndexes = data.messageSearchIndexes;
   templateSMS.receiver[0].id = data.ContactKey;
   templateSMS.receiver[0].phoneNumber = data.mobileNumber;
   templateSMS.receiver[0].party.id = data.ContactKey;

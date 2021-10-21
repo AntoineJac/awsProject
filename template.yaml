@@ -13,18 +13,14 @@ Globals:
     Architectures:
         - x86_64
 Parameters:
-    ApiGatewayKeyS:
-        Description: 'API SMS Gateway Key'
-        Type: 'String'
-        Default: '08e743a0-0d22-4b27-aeb5-9937cb5e1383'
     MCSecret:
         Description: 'Marketing Cloud JWT Token'
-        Type: 'String'
-        Default: 'shhhhh'
+        Type: 'AWS::SSM::Parameter::Value<String>'
+        Default: /MCSecret
     ApiGatewayKey:
         Description: 'API SMS Gateway Key'
-        Type: AWS::SSM::Parameter::Value<String>
-        Default: /ApiGatewayKey
+        Type: 'AWS::SSM::Parameter::Value<String>'
+        Default: ApiGatewayKey
 Resources:
   ExecuteEntryFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
