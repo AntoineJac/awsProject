@@ -6,6 +6,7 @@
   "author": "",
   "license": "MIT",
   "scripts": {
+    "git": "git add . && git add ./dependencies/nodejs/node_modules -f",
     "testMock": "mocha lambdas/hello-world/tests/unit lambdas/callSmsApi/tests/unit",
     "test": "",
     "debug:api": "sam local start-api --debug-port 5000"

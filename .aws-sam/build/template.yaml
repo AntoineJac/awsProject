@@ -11,6 +11,15 @@ Globals:
     Runtime: nodejs14.x
     Architectures:
     - x86_64
+Parameters:
+  ApiGatewayKey:
+    Description: Required. MongoDB connection URL
+    Type: String
+    Default: testDefault
+  MCSecret:
+    Description: Required. MongoDB connection URL
+    Type: String
+    Default: shhhhh
 Resources:
   HelloWorldFunction:
     Type: AWS::Serverless::Function
@@ -25,8 +34,9 @@ Resources:
           - '*'
       Environment:
         Variables:
-          mcSecret: shhhhh
-      CodeUri: HelloWorldFunction
+          mcSecret:
+            Ref: MCSecret
+      CodeUri: ../../lambdas/hello-world
       Handler: app.lambdaHandler
       Layers:
       - Ref: JsonWebTokenLayer
@@ -41,7 +51,8 @@ Resources:
     Properties:
       Environment:
         Variables:
-          SmsApiGatewayKey: '08e743a0-0d22-4b27-aeb5-9937cb5e1383'
+          SmsApiGatewayKey:
+            Ref: ApiGatewayKey
       CodeUri: CallSmsApiFunction
       Handler: app.lambdaHandler
   JsonWebTokenLayer:

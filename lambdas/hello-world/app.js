@@ -49,7 +49,7 @@ const invokeSmsApiLambda = async (payloadSMS) => {
 
 const mcActivityExecute = async (event, context) => {
     return new Promise((resolve, reject) => {
-      // Decode the post body
+      // Decode the post body test
       utilsLayer.processMC(event.body)
           .then((decoded) => {
               if (decoded) {
