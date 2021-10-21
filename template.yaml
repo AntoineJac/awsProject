@@ -47,6 +47,33 @@ Resources:
           Properties:
             Path: /execute
             Method: any
+  PublishEntryFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      FunctionName: MC-CA-API-PublishEntryFunction
+      Environment:
+        Variables:
+          MCSecret: !Ref JwtTokenSecretMC
+      CodeUri: lambdas/publishEntry/
+      Handler: app.lambdaHandler
+      Layers:
+              - !Ref JsonWebTokenLayer
+      Events:
+        PublishEntry:
+          Type: HttpApi # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /publish
+            Method: any  
+        ValidateEntry:
+          Type: HttpApi # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /validate
+            Method: any
+        SaveEntry:
+          Type: HttpApi # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /save
+            Method: any              
   CallSmsApiFunction:
     Type: AWS::Serverless::Function 
     Properties:
