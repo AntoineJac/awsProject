@@ -52,6 +52,7 @@ Resources:
       Environment:
         Variables:
           SmsApiGatewayKey: !Ref ApiGatewayKey
+          EndpointUrlSMS: https://webhook.site/761ab0e3-ace7-42d4-873c-e12a85a4a4cf
       CodeUri: lambdas/callSmsApi/
       Handler: app.lambdaHandler           
   JsonWebTokenLayer:

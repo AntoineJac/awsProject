@@ -13,11 +13,11 @@ Globals:
     - x86_64
 Parameters:
   ApiGatewayKey:
-    Description: Required. MongoDB connection URL
+    Description: API SMS Gateway Key
     Type: String
-    Default: testDefault
+    Default: '08e743a0-0d22-4b27-aeb5-9937cb5e1383'
   MCSecret:
-    Description: Required. MongoDB connection URL
+    Description: Marketing Cloud JWT Token
     Type: String
     Default: shhhhh
 Resources:
@@ -36,7 +36,7 @@ Resources:
         Variables:
           mcSecret:
             Ref: MCSecret
-      CodeUri: ExecuteEntryFunction
+      CodeUri: ../../lambdas/executeEntry
       Handler: app.lambdaHandler
       Layers:
       - Ref: JsonWebTokenLayer
@@ -53,6 +53,7 @@ Resources:
         Variables:
           SmsApiGatewayKey:
             Ref: ApiGatewayKey
+          EndpointUrlSMS: https://webhook.site/761ab0e3-ace7-42d4-873c-e12a85a4a4cf
       CodeUri: CallSmsApiFunction
       Handler: app.lambdaHandler
   JsonWebTokenLayer:

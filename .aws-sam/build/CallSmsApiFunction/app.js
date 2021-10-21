@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const { SmsApiGatewayKey } = process.env;
+const { SmsApiGatewayKey, EndpointUrlSMS } = process.env;
 
 const templateSMS = {
   id: '',
@@ -46,7 +46,7 @@ const generateUUID = () => 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/
 });
 
 const callAPI = async (paramsTemplateSMS) => {
-  const result = axios.post('https://webhook.site/761ab0e3-ace7-42d4-873c-e12a85a4a4cf',
+  const result = axios.post(EndpointUrlSMS,
     paramsTemplateSMS,
     {
       headers: {
