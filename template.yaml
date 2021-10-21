@@ -15,12 +15,12 @@ Globals:
 Parameters:
     MCSecret:
         Description: 'Marketing Cloud JWT Token'
-        Type: 'AWS::SSM::Parameter::Value<String>'
-        Default: /MCSecret
+        Type: 'String'
+        Default: 'MCSecret'
     ApiGatewayKey:
         Description: 'API SMS Gateway Key'
-        Type: 'AWS::SSM::Parameter::Value<String>'
-        Default: ApiGatewayKey
+        Type: 'String'
+        Default: 'ApiGatewayKey'
 Resources:
   ExecuteEntryFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
