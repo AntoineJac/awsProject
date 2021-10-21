@@ -13,10 +13,10 @@ Globals:
     Architectures:
         - x86_64
 Parameters:
-    MCSecret:
+    JwtTokenSecretMC:
         Description: 'Marketing Cloud JWT Token'
         Type: 'AWS::SSM::Parameter::Value<String>'
-        Default: 'MCSecret'
+        Default: 'JwtTokenSecretMC'
     SmsApiGatewayKey:
         Description: 'API SMS Gateway Key'
         Type: 'AWS::SSM::Parameter::Value<String>'
@@ -36,7 +36,7 @@ Resources:
                 - '*'
       Environment:
         Variables:
-          MCSecret: !Ref MCSecret
+          MCSecret: !Ref JwtTokenSecretMC
       CodeUri: lambdas/executeEntry/
       Handler: app.lambdaHandler
       Layers:
