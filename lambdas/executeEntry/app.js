@@ -30,7 +30,7 @@ const returnPayloadSms = (decoded) => {
 
 const invokeSmsApiLambda = async (payloadSMS) => {
   const params = {
-    FunctionName: 'sam-hello-world-CallSmsApiFunction-cz6icpbBQzOj',
+    FunctionName: 'MC-CA-API-CallSmsApiFunction',
     InvocationType: 'Event',
     Payload: payloadSMS,
   };

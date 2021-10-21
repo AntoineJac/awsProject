@@ -25,6 +25,7 @@ Resources:
   ExecuteEntryFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
+      FunctionName: MC-CA-API-ExecuteEntryFunction
       Policies:
         - Statement:
             - Effect: Allow
@@ -49,6 +50,7 @@ Resources:
   CallSmsApiFunction:
     Type: AWS::Serverless::Function 
     Properties:
+      FunctionName: MC-CA-API-CallSmsApiFunction
       Environment:
         Variables:
           SmsApiGatewayKey: !Ref ApiGatewayKey
