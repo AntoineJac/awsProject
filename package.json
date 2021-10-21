@@ -7,12 +7,20 @@
   "license": "MIT",
   "scripts": {
     "git": "git add . && git add ./dependencies/nodejs/node_modules -f",
-    "testMock": "mocha lambdas/hello-world/tests/unit lambdas/callSmsApi/tests/unit",
+    "testSaved": "mocha lambdas/executeEntry/tests/unit lambdas/callSmsApi/tests/unit",
     "test": "",
-    "debug:api": "sam local start-api --debug-port 5000"
+    "debug:api": "sam local start-api --debug-port 5000",
+    "lambdaEntry": "sam local invoke ExecuteEntryFunction --event events/event_main.json",
+    "lambdaApi": "sam local invoke CallSmsApiFunction --event events/event_sms_api.json",
+    "lint": "eslint ./"
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.1.1",
     "mocha": "^8.2.1"
   }
 }

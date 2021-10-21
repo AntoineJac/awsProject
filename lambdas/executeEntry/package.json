@@ -1,13 +1,10 @@
 {
-  "name": "dependencies",
+  "name": "execute_entry",
   "version": "1.0.0",
-  "description": "dependencies module for Custom Activity",
-  "main": "index.js",
+  "description": "Execute Entry sample for NodeJS",
+  "main": "app.js",
   "author": "SAM CLI",
   "license": "MIT",
-  "dependencies": {
-    "jsonwebtoken": "^8.5.1"
-  },
   "scripts": {
     "test": "mocha tests/unit/"
   },

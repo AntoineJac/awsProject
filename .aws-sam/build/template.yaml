@@ -21,7 +21,7 @@ Parameters:
     Type: String
     Default: shhhhh
 Resources:
-  HelloWorldFunction:
+  ExecuteEntryFunction:
     Type: AWS::Serverless::Function
     Properties:
       Policies:
@@ -36,15 +36,15 @@ Resources:
         Variables:
           mcSecret:
             Ref: MCSecret
-      CodeUri: ../../lambdas/hello-world
+      CodeUri: ExecuteEntryFunction
       Handler: app.lambdaHandler
       Layers:
       - Ref: JsonWebTokenLayer
       Events:
-        HelloWorld:
+        ExecuteEntry:
           Type: HttpApi
           Properties:
-            Path: /hello
+            Path: /execute
             Method: any
   CallSmsApiFunction:
     Type: AWS::Serverless::Function
@@ -68,19 +68,19 @@ Resources:
       LicenseInfo: MIT
       RetentionPolicy: Retain
 Outputs:
-  HelloWorldApi:
-    Description: API Gateway endpoint URL for Prod stage for Hello World function
+  ExecuteApi:
+    Description: API Gateway endpoint URL for Prod stage for Execute function
     Value:
       Fn::Sub: https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/
-  HelloWorldFunction:
-    Description: Hello World Lambda Function ARN
+  ExecuteEntryFunction:
+    Description: Execute Lambda Function ARN
     Value:
       Fn::GetAtt:
-      - HelloWorldFunction
+      - ExecuteEntryFunction
       - Arn
-  HelloWorldFunctionIamRole:
-    Description: Implicit IAM Role created for Hello World function
+  ExecuteEntryFunctionIamRole:
+    Description: Implicit IAM Role created for Execute function
     Value:
       Fn::GetAtt:
-      - HelloWorldFunctionRole
+      - ExecuteEntryFunctionRole
       - Arn

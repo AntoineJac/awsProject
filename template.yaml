@@ -14,15 +14,15 @@ Globals:
         - x86_64
 Parameters:
     ApiGatewayKey:
-        Description: 'Required. MongoDB connection URL'
+        Description: 'API SMS Gateway Key'
         Type: 'String'
-        Default: 'testDefault'
+        Default: '08e743a0-0d22-4b27-aeb5-9937cb5e1383'
     MCSecret:
-        Description: 'Required. MongoDB connection URL'
+        Description: 'Marketing Cloud JWT Token'
         Type: 'String'
         Default: 'shhhhh'  
 Resources:
-  HelloWorldFunction:
+  ExecuteEntryFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       Policies:
@@ -36,15 +36,15 @@ Resources:
       Environment:
         Variables:
           mcSecret: !Ref MCSecret
-      CodeUri: lambdas/hello-world/
+      CodeUri: lambdas/executeEntry/
       Handler: app.lambdaHandler
       Layers:
               - !Ref JsonWebTokenLayer
       Events:
-        HelloWorld:
+        ExecuteEntry:
           Type: HttpApi # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /hello
+            Path: /execute
             Method: any
   CallSmsApiFunction:
     Type: AWS::Serverless::Function 
@@ -71,12 +71,12 @@ Outputs:
   # ServerlessHttpApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+  ExecuteApi:
+    Description: "API Gateway endpoint URL for Prod stage for Execute function"
     Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/"
-  HelloWorldFunction:
-    Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
-    Value: !GetAtt HelloWorldFunctionRole.Arn
+  ExecuteEntryFunction:
+    Description: "Execute Lambda Function ARN"
+    Value: !GetAtt ExecuteEntryFunction.Arn
+  ExecuteEntryFunctionIamRole:
+    Description: "Implicit IAM Role created for Execute function"
+    Value: !GetAtt ExecuteEntryFunctionRole.Arn
