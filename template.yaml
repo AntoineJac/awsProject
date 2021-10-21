@@ -15,12 +15,12 @@ Globals:
 Parameters:
     MCSecret:
         Description: 'Marketing Cloud JWT Token'
-        Type: 'String'
+        Type: 'AWS::SSM::Parameter::Value<String>'
         Default: 'MCSecret'
-    ApiGatewayKey:
+    SmsApiGatewayKey:
         Description: 'API SMS Gateway Key'
-        Type: 'String'
-        Default: 'ApiGatewayKey'
+        Type: 'AWS::SSM::Parameter::Value<String>'
+        Default: 'SmsApiGatewayKey'
 Resources:
   ExecuteEntryFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -36,7 +36,7 @@ Resources:
                 - '*'
       Environment:
         Variables:
-          mcSecret: !Ref MCSecret
+          MCSecret: !Ref MCSecret
       CodeUri: lambdas/executeEntry/
       Handler: app.lambdaHandler
       Layers:
@@ -53,7 +53,7 @@ Resources:
       FunctionName: MC-CA-API-CallSmsApiFunction
       Environment:
         Variables:
-          SmsApiGatewayKey: !Ref ApiGatewayKey
+          SmsApiGatewayKey: !Ref SmsApiGatewayKey
           EndpointUrlSMS: https://webhook.site/761ab0e3-ace7-42d4-873c-e12a85a4a4cf
       CodeUri: lambdas/callSmsApi/
       Handler: app.lambdaHandler           

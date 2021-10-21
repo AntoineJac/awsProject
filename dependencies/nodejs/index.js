@@ -5,7 +5,7 @@
  */
 const jsonwebtoken = require('jsonwebtoken');
 
-const { mcSecret } = process.env;
+const { MCSecret } = process.env;
 
 /**
   * Decodes and verifies a given JWT String
@@ -38,7 +38,7 @@ const JWTverify = (body, secret) => {
 
 const processMC = (token, returnObj) => {
   const result = new Promise((resolve, reject) => {
-    JWTverify(token, mcSecret)
+    JWTverify(token, MCSecret)
       .then((decoded) => {
         // Shorthand for methods that don't do further processing
         if (returnObj) {
