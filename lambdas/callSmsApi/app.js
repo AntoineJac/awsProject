@@ -80,7 +80,7 @@ const replaceTemplate = (data) => {
 
 exports.lambdaHandler = async (event, context, callback) => {
   // const TemplateSmsFilled = replaceTemplate(event);
-  const TemplateSmsFilled = replaceTemplate(event.Records[0].body);
+  const TemplateSmsFilled = replaceTemplate(JSON.parse(event.Records[0].body));
   try {
     const response = await callAPI(TemplateSmsFilled);
     return callback(null, response);
