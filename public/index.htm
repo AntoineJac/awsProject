@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Custom Journey Builder Activity</title>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous">
+    </script>
+    <script type="text/javascript" src="https://journey-sms.azurewebsites.net/js/require.js"></script>
+    <script type="text/javascript">
+        (function () {
+            var config = {
+                baseUrl: 'js'
+            };
+
+            var dependencies = [
+                'customActivity'
+            ];
+
+            require(config, dependencies);
+        })();
+    </script>
+    <!--Styles-->
+    <style type="text/css">
+        body {
+            padding: 20px;
+            margin: 0;
+        }
+
+        .step {
+            display: none;
+        }
+
+        #step1 {
+            display: block;
+        }
+    </style>
+
+</head>
+<body>
+    <div id="step1" class="step">
+        <div class="container">
+            <div class="card">
+                <div class="row col-3">
+                    <p class="bg-info"><strong>Test SMS Activity POC</strong></p>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <label for="sms">Please enter the SMS text</label>
+                        <br />
+                        <textarea id="smstext" name="sms" cols="30" rows="5" placeholder="Write SMS here..."></textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <label for="dataExtensionName">Please enter a valid Data Extension Name:</label>
+                    <input id="dataExtensionName" type="text">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
