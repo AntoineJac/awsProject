@@ -1,17 +1,21 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  testAntoineSamConsol
+  MarketingCloudCustomActivityMultiChoice
 
-  Sample SAM Template for testAntoineSamConsol
+  SAM Template for MultiChoice Marketing Cloud Custom Activity
   
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Timeout: 3
     Runtime: nodejs14.x
-    Architectures:
-        - x86_64
+    Architectures: 
+      - x86_64
+    MemorySize: 128
+    EventInvokeConfig: 
+      MaximumEventAgeInSeconds: 60
+      MaximumRetryAttempts: 2
 Parameters:
     JwtTokenSecretMC:
         Description: 'Marketing Cloud JWT Token'
@@ -22,6 +26,29 @@ Parameters:
         Type: 'AWS::SSM::Parameter::Value<String>'
         Default: 'SmsApiGatewayKey'
 Resources:
+  HttpSmsMcApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      DefaultRouteSettings:
+        ThrottlingBurstLimit: 150
+        ThrottlingRateLimit: 1000
+  SmsDeadQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: MC-CA-API-SmsDeadQueue
+      ReceiveMessageWaitTimeSeconds: 20
+  SmsApiMcStandardQueue: 
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: MC-CA-API-SmsApiMcStandardQueue
+      VisibilityTimeout: 30
+      ReceiveMessageWaitTimeSeconds: 20
+      RedrivePolicy:
+        deadLetterTargetArn:
+          Fn::GetAtt: 
+            - "SmsDeadQueue"
+            - "Arn"
+        maxReceiveCount: 2
   ExecuteEntryFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -32,6 +59,7 @@ Resources:
               Action:
                 - 'lambda:InvokeAsyncs'
                 - 'lambda:InvokeFunction'
+                - 'sqs:SendMessage'
               Resource:
                 - '*'
       Environment:
@@ -45,8 +73,10 @@ Resources:
         ExecuteEntry:
           Type: HttpApi # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
+            ApiId: !Ref HttpSmsMcApi
             Path: /execute
-            Method: any
+            Method: POST
+            TimeoutInMillis: 10000
   PublishEntryFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -62,28 +92,55 @@ Resources:
         PublishEntry:
           Type: HttpApi # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
+            ApiId: !Ref HttpSmsMcApi
             Path: /publish
-            Method: any  
+            Method: POST
+            TimeoutInMillis: 10000
         ValidateEntry:
           Type: HttpApi # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
+            ApiId: !Ref HttpSmsMcApi
             Path: /validate
-            Method: any
+            Method: POST
+            TimeoutInMillis: 10000
         SaveEntry:
           Type: HttpApi # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
+            ApiId: !Ref HttpSmsMcApi
             Path: /save
-            Method: any              
+            Method: POST
+            TimeoutInMillis: 10000
   CallSmsApiFunction:
     Type: AWS::Serverless::Function 
     Properties:
       FunctionName: MC-CA-API-CallSmsApiFunction
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - 'sqs:ReceiveMessage'
+              Resource:
+                - '*'
       Environment:
         Variables:
           SmsApiGatewayKey: !Ref SmsApiGatewayKey
           EndpointUrlSMS: https://webhook.site/761ab0e3-ace7-42d4-873c-e12a85a4a4cf
       CodeUri: lambdas/callSmsApi/
-      Handler: app.lambdaHandler           
+      Handler: app.lambdaHandler
+      ReservedConcurrentExecutions: 100
+      EventInvokeConfig:
+        MaximumEventAgeInSeconds: 300
+        MaximumRetryAttempts: 1
+      Events:
+        MySQSEvent:
+          Type: SQS
+          Properties:
+            Queue: 
+              Fn::GetAtt: 
+                - "SmsApiMcStandardQueue"
+                - "Arn"
+            MaximumBatchingWindowInSeconds: 30
+            BatchSize: 1
   JsonWebTokenLayer:
         Type: AWS::Serverless::LayerVersion
         Properties:
@@ -93,7 +150,7 @@ Resources:
             CompatibleRuntimes:
               - nodejs6.10
               - nodejs8.10
-              - nodejs14.x    
+              - nodejs14.x
             LicenseInfo: 'MIT'
             RetentionPolicy: Retain
 
@@ -101,12 +158,30 @@ Outputs:
   # ServerlessHttpApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  ExecuteApi:
+  ExecuteApiUrl:
     Description: "API Gateway endpoint URL for Prod stage for Execute function"
-    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/"
+    Value: !Sub "https://${HttpSmsMcApi}.execute-api.${AWS::Region}.amazonaws.com/"
   ExecuteEntryFunction:
-    Description: "Execute Lambda Function ARN"
+    Description: "Lambda Function called by Executed route"
     Value: !GetAtt ExecuteEntryFunction.Arn
   ExecuteEntryFunctionIamRole:
     Description: "Implicit IAM Role created for Execute function"
     Value: !GetAtt ExecuteEntryFunctionRole.Arn
+  PublishEntryFunction:
+    Description: "Lambda Function called by Save, Validate and Publish routes"
+    Value: !GetAtt PublishEntryFunction.Arn
+  PublishEntryFunctionIamRole:
+    Description: "Implicit IAM Role created for Publish function"
+    Value: !GetAtt PublishEntryFunctionRole.Arn
+  CallSmsApiFunction:
+    Description: "Call SMS APILambda Function ARN"
+    Value: !GetAtt CallSmsApiFunction.Arn
+  CallSmsApiFunctionIamRole:
+    Description: "Implicit IAM Role created for CallSmsApi function"
+    Value: !GetAtt CallSmsApiFunctionRole.Arn
+  SmsApiMcStandardQueue:
+    Description: "SMS API Queue ARN"
+    Value: !GetAtt SmsApiMcStandardQueue.Arn
+  SmsDeadQueue:
+    Description: "SMS API Dead Queue ARN"
+    Value: !GetAtt SmsDeadQueue.Arn

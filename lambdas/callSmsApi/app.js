@@ -56,20 +56,10 @@ const callAPI = async (paramsTemplateSMS) => {
         'x-Gateway-APIKey': SmsApiGatewayKey,
       },
     })
-    .then((response) => ({
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: response.data,
+    .then((response) => JSON.stringify({
+      message: `API call sent succesfully: Response: ${response.data}`,
     }))
-    .catch((err) => ({
-      statusCode: 400,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: `##ERROR: ErrorName: ${err.name}  -  ErrorMessage: ${err.message}`,
-    }));
+    .catch((err) => { throw new Error(err); });
   return result;
 };
 
@@ -89,7 +79,12 @@ const replaceTemplate = (data) => {
 };
 
 exports.lambdaHandler = async (event, context, callback) => {
-  const TemplateSmsFilled = replaceTemplate(event);
-  const response = await callAPI(TemplateSmsFilled);
-  return callback(null, response);
+  // const TemplateSmsFilled = replaceTemplate(event);
+  const TemplateSmsFilled = replaceTemplate(event.Records[0].body);
+  try {
+    const response = await callAPI(TemplateSmsFilled);
+    return callback(null, response);
+  } catch (err) {
+    return callback(`##ERROR: ErrorName: ${err.name}  -  ErrorMessage: ${err.message}`);
+  }
 };

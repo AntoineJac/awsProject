@@ -3,7 +3,10 @@ const utilsLayer = require('/opt/nodejs/index');
 const AWS = require('aws-sdk');
 /* eslint-enable */
 
+const smsQueueUrl = 'https://sqs.af-south-1.amazonaws.com/340849193897/MC-CA-API-SmsApiMcStandardQueue';
+const smsApiFunction = 'MC-CA-API-CallSmsApiFunction';
 const lambda = new AWS.Lambda();
+const sqs = new AWS.SQS();
 
 const returnPayloadSms = (decoded) => {
   if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
@@ -28,9 +31,28 @@ const returnPayloadSms = (decoded) => {
   throw new utilsLayer.CustomError('BAD Request OR Empty Arguments', 401, 'returnPayloadSmsFunction');
 };
 
+/* eslint-disable no-unused-vars */
+const sendSqsMessage = async (payloadSMS) => {
+  const params = {
+    QueueUrl: smsQueueUrl,
+    MessageBody: JSON.stringify(payloadSMS),
+  };
+
+  return new Promise((resolve, reject) => {
+    sqs.sendMessage(params, (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data);
+      }
+    });
+  });
+};
+
+/* eslint-disable no-unused-vars */
 const invokeSmsApiLambda = async (payloadSMS) => {
   const params = {
-    FunctionName: 'MC-CA-API-CallSmsApiFunction',
+    FunctionName: smsApiFunction,
     InvocationType: 'Event',
     Payload: payloadSMS,
   };
@@ -45,6 +67,7 @@ const invokeSmsApiLambda = async (payloadSMS) => {
     });
   });
 };
+/* eslint-enable no-unused-vars */
 
 const mcActivityExecute = async (event) => new Promise((resolve, reject) => {
   // Decode the post body test
@@ -53,7 +76,8 @@ const mcActivityExecute = async (event) => new Promise((resolve, reject) => {
       if (decoded) {
         let payloadSMS = returnPayloadSms(decoded);
         payloadSMS = JSON.stringify(payloadSMS);
-        invokeSmsApiLambda(payloadSMS)
+        // invokeSmsApiLambda(payloadSMS)
+        sendSqsMessage(payloadSMS)
           .then(() => {
             resolve({
               statusCode: 200,
