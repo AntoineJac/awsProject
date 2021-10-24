@@ -35,7 +35,7 @@ const returnPayloadSms = (decoded) => {
 const sendSqsMessage = async (payloadSMS) => {
   const params = {
     QueueUrl: smsQueueUrl,
-    MessageBody: JSON.stringify(payloadSMS),
+    MessageBody: payloadSMS,
   };
 
   return new Promise((resolve, reject) => {
