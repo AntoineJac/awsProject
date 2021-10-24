@@ -2,27 +2,27 @@
 
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>Custom Journey Builder Activity</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie-edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MC Custom activty Multichoice</title>
 
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-            crossorigin="anonymous">
-    </script>
-    <script type="text/javascript" src="https://journey-sms.azurewebsites.net/js/require.js"></script>
+    <!--Load required modules-->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/require.js"></script>
+    
     <script type="text/javascript">
-        (function () {
-            var config = {
-                baseUrl: 'js'
-            };
-
-            var dependencies = [
-                'customActivity'
-            ];
-
-            require(config, dependencies);
+        (function() {
+          var config = {
+            baseUrl: "js"
+          };
+  
+          var dependencies = ["customActivity"];
+  
+          require(config, dependencies);
         })();
     </script>
+
     <!--Styles-->
     <style type="text/css">
         body {

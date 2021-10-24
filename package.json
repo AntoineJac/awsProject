@@ -13,7 +13,7 @@
     "lambdaExecute": "sam local invoke ExecuteEntryFunction --event events/event_main.json",
     "lambdaPublish": "sam local invoke PublishEntryFunction --event events/event_main.json",
     "lambdaApi": "sam local invoke CallSmsApiFunction --event events/event_sms_api.json",
-    "lint": "eslint ./"
+    "lint": "eslint ./ --ignore-pattern public/"
   },
   "devDependencies": {
     "chai": "^4.2.0",

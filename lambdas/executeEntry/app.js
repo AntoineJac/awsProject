@@ -3,7 +3,7 @@ const utilsLayer = require('/opt/nodejs/index');
 const AWS = require('aws-sdk');
 /* eslint-enable */
 
-const smsQueueUrl = 'https://sqs.af-south-1.amazonaws.com/340849193897/MC-CA-API-SmsApiMcStandardQueue';
+const smsQueueUrl = 'https://sqs.af-south-1.amazonaws.com/340849193897/MC-CA-API-SmsApiQueue';
 const smsApiFunction = 'MC-CA-API-CallSmsApiFunction';
 const lambda = new AWS.Lambda();
 const sqs = new AWS.SQS();
@@ -43,7 +43,7 @@ const sendSqsMessage = async (payloadSMS) => {
       if (err) {
         reject(err);
       } else {
-        resolve(data);
+        resolve('SmsApiQueue');
       }
     });
   });
@@ -62,7 +62,7 @@ const invokeSmsApiLambda = async (payloadSMS) => {
       if (err) {
         reject(err);
       } else {
-        resolve(data);
+        resolve('SmsApiFunction');
       }
     });
   });
@@ -78,14 +78,14 @@ const mcActivityExecute = async (event) => new Promise((resolve, reject) => {
         payloadSMS = JSON.stringify(payloadSMS);
         // invokeSmsApiLambda(payloadSMS)
         sendSqsMessage(payloadSMS)
-          .then(() => {
+          .then((response) => {
             resolve({
               statusCode: 200,
               headers: {
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                message: 'SMS has been passed to the CallApiFunction',
+                message: `SMS has been passed to the ${response}`,
               }),
             });
           })

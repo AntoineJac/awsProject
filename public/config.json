@@ -1,89 +1,66 @@
 {
     "workflowApiVersion": "1.1",
     "metaData": {
-       "icon": "images/sms.png",
-       "category": "message"
+       "icon": "icon.png",
+       "category": "message",
+       "configOnDrop": false
     },
     "type": "REST",
     "lang": {
        "en-US": {
-           "name": "REST Activity (Workflow API v1.1)",
-           "description": "An example REST activity using workflow API v1.1 format."
+           "name": "JB REST Activity Message Multichoice",
+           "description": "A REST activity used to send messages from JB to Multichoice customers"
        }
     },
     "arguments": {
         "execute": {
-            "inArguments": [
-                {
-                    "emailAddress": "{{InteractionDefaults.Email}}"
-                },
-                {
-                    "phoneNumber": "{{Contact.Default.PhoneNumber}}"
-                }
-            ],
-            "outArguments": [
-                {
-                    "foundSignupDate": ""
-                }
-            ],
-            "url": "https://some-endpoint.com/execute"
+            "inArguments": [],
+            "outArguments": [],
+            "url": "https://k7xu5llsm8.execute-api.af-south-1.amazonaws.com/execute",
+            "verb": "POST",
+            "format": "json",
+            "useJwt": true,
+            "timeout": 10000,
+            "retryCount": 0,
+            "retryDelay": 1000,
+            "concurrentRequests": 10
         }
     },
     "configurationArguments": {
-       "save": {
-           "url": "URI/for/your/activity/save"
-       },
-       "publish": {
-           "url": "URI/for/your/activity/publish"
-       },
-       "validate": {
-           "url": "URI/for/your/activity/validate"
-       },
-       "stop": {
-           "url": "URI/for/your/activity/stop"
-       }
+        "save": {
+            "url": "https://k7xu5llsm8.execute-api.af-south-1.amazonaws.com/save",
+            "verb": "POST",
+            "useJwt": true
+        },
+        "publish": {
+            "url": "https://k7xu5llsm8.execute-api.af-south-1.amazonaws.com/publish",
+            "verb": "POST",
+            "useJwt": true
+        },
+        "stop": {
+            "url": "https://k7xu5llsm8.execute-api.af-south-1.amazonaws.com/stop",
+            "verb": "POST",
+            "useJwt": true
+        },
+        "validate": {
+            "url": "https://k7xu5llsm8.execute-api.af-south-1.amazonaws.com`/validate",
+            "verb": "POST",
+            "useJwt": true
+        }
     },
-    "wizardSteps": [
-       { "label": "Step 1", "key": "step1" },
-       { "label": "Step 2", "key": "step2" },
-       { "label": "Step 3", "key": "step3" },
-       { "label": "Step 4", "key": "step4", "active": false }
-    ],
+    "wizardSteps": [],
     "userInterfaces": {
        "configModal": {
            "height": 200,
            "width": 300,
-           "fullscreen": true
+           "fullscreen": false
        }
     },
     "schema": {
         "arguments": {
             "execute": {
-                "inArguments": [
-                    {
-                        "phoneNumber": {
-                            "dataType": "Phone",
-                            "isNullable": false,
-                            "direction": "in"   
-                        }
-                    },
-                    {
-                        "emailAddress": {
-                            "dataType": "Email",
-                            "isNullable": false,
-                            "direction": "in"
-                        }
-                    }
-                ],
-                "outArguments": [
-                    {
-                        "foundSignupDate": {
-                            "dataType": "Date",
-                            "direction": "out",
-                            "access": "visible"
-                        }
-                    }
-                ]
+                "inArguments": [],
+                "outArguments": []
             }
         }
     }

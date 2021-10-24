@@ -4,8 +4,7 @@ Description: >
   MarketingCloudCustomActivityMultiChoice
 
   SAM Template for MultiChoice Marketing Cloud Custom Activity
-  
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+
 Globals:
   Function:
     Timeout: 3
@@ -29,22 +28,26 @@ Parameters:
         Description: 'API SMS Gateway Endpoint URL'
         Type: 'AWS::SSM::Parameter::Value<String>'
         Default: 'EndpointUrlSMS'
+    SmsApiConcurrency:
+        Description: 'API SMS Gateway Concurrency'
+        Type: 'AWS::SSM::Parameter::Value<String>'
+        Default: 'SmsApiConcurrency'
 Resources:
   HttpSmsMcApi:
     Type: AWS::Serverless::HttpApi
     Properties:
       DefaultRouteSettings:
-        ThrottlingBurstLimit: 150
-        ThrottlingRateLimit: 1000
+        ThrottlingBurstLimit: 150 #Set to 150 conccurent request
+        ThrottlingRateLimit: 1000 #Set to 1000 qps => 3.6m by hour
   SmsDeadQueue:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: MC-CA-API-SmsDeadQueue
       ReceiveMessageWaitTimeSeconds: 20
-  SmsApiMcStandardQueue: 
+  SmsApiQueue: 
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: MC-CA-API-SmsApiMcStandardQueue
+      QueueName: MC-CA-API-SmsApiQueue
       VisibilityTimeout: 30
       ReceiveMessageWaitTimeSeconds: 20
       RedrivePolicy:
@@ -54,7 +57,7 @@ Resources:
             - "Arn"
         maxReceiveCount: 2
   ExecuteEntryFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       FunctionName: MC-CA-API-ExecuteEntryFunction
       Policies:
@@ -75,14 +78,14 @@ Resources:
               - !Ref JsonWebTokenLayer
       Events:
         ExecuteEntry:
-          Type: HttpApi # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: HttpApi
           Properties:
             ApiId: !Ref HttpSmsMcApi
             Path: /execute
             Method: POST
             TimeoutInMillis: 10000
   PublishEntryFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       FunctionName: MC-CA-API-PublishEntryFunction
       Environment:
@@ -94,21 +97,21 @@ Resources:
               - !Ref JsonWebTokenLayer
       Events:
         PublishEntry:
-          Type: HttpApi # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: HttpApi
           Properties:
             ApiId: !Ref HttpSmsMcApi
             Path: /publish
             Method: POST
             TimeoutInMillis: 10000
         ValidateEntry:
-          Type: HttpApi # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: HttpApi
           Properties:
             ApiId: !Ref HttpSmsMcApi
             Path: /validate
             Method: POST
             TimeoutInMillis: 10000
         SaveEntry:
-          Type: HttpApi # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: HttpApi
           Properties:
             ApiId: !Ref HttpSmsMcApi
             Path: /save
@@ -131,7 +134,7 @@ Resources:
           EndpointUrlSMS: !Ref EndpointUrlSMS
       CodeUri: lambdas/callSmsApi/
       Handler: app.lambdaHandler
-      ReservedConcurrentExecutions: 100
+      ReservedConcurrentExecutions: !Ref SmsApiConcurrency
       EventInvokeConfig:
         MaximumEventAgeInSeconds: 300
         MaximumRetryAttempts: 1
@@ -141,7 +144,7 @@ Resources:
           Properties:
             Queue: 
               Fn::GetAtt: 
-                - "SmsApiMcStandardQueue"
+                - "SmsApiQueue"
                 - "Arn"
             MaximumBatchingWindowInSeconds: 30
             BatchSize: 1
@@ -159,9 +162,6 @@ Resources:
             RetentionPolicy: Retain
 
 Outputs:
-  # ServerlessHttpApi is an implicit API created out of Events key under Serverless::Function
-  # Find out more about other implicit resources you can reference within SAM
-  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   ExecuteApiUrl:
     Description: "API Gateway endpoint URL for Prod stage for Execute function"
     Value: !Sub "https://${HttpSmsMcApi}.execute-api.${AWS::Region}.amazonaws.com/"
@@ -183,9 +183,9 @@ Outputs:
   CallSmsApiFunctionIamRole:
     Description: "Implicit IAM Role created for CallSmsApi function"
     Value: !GetAtt CallSmsApiFunctionRole.Arn
-  SmsApiMcStandardQueue:
+  SmsApiQueue:
     Description: "SMS API Queue ARN"
-    Value: !GetAtt SmsApiMcStandardQueue.Arn
+    Value: !GetAtt SmsApiQueue.Arn
   SmsDeadQueue:
     Description: "SMS API Dead Queue ARN"
     Value: !GetAtt SmsDeadQueue.Arn
