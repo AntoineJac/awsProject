@@ -36,18 +36,19 @@ Resources:
   HttpSmsMcApi:
     Type: AWS::Serverless::HttpApi
     Properties:
+      Name: ${AWS::StackName}
       DefaultRouteSettings:
         ThrottlingBurstLimit: 150 #Set to 150 conccurent request
         ThrottlingRateLimit: 1000 #Set to 1000 qps => 3.6m by hour
   SmsDeadQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: MC-CA-API-SmsDeadQueue
+      QueueName: ${AWS::StackName}-SmsDeadQueue
       ReceiveMessageWaitTimeSeconds: 20
   SmsApiQueue: 
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: MC-CA-API-SmsApiQueue
+      QueueName: ${AWS::StackName}-SmsApiQueue
       VisibilityTimeout: 30
       ReceiveMessageWaitTimeSeconds: 20
       RedrivePolicy:
@@ -59,7 +60,7 @@ Resources:
   ExecuteEntryFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: MC-CA-API-ExecuteEntryFunction
+      FunctionName: ${AWS::StackName}-ExecuteEntryFunction
       Policies:
         - Statement:
             - Effect: Allow
@@ -87,7 +88,7 @@ Resources:
   PublishEntryFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: MC-CA-API-PublishEntryFunction
+      FunctionName: ${AWS::StackName}-PublishEntryFunction
       Environment:
         Variables:
           MCSecret: !Ref JwtTokenSecretMC
@@ -120,7 +121,7 @@ Resources:
   CallSmsApiFunction:
     Type: AWS::Serverless::Function 
     Properties:
-      FunctionName: MC-CA-API-CallSmsApiFunction
+      FunctionName: ${AWS::StackName}-CallSmsApiFunction
       Policies:
         - Statement:
             - Effect: Allow
