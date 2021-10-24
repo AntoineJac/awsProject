@@ -36,31 +36,30 @@ Resources:
   HttpSmsMcApi:
     Type: AWS::Serverless::HttpApi
     Properties:
-      Name: ${AWS::StackName}
       DefaultRouteSettings:
         ThrottlingBurstLimit: 150 #Set to 150 conccurent request
         ThrottlingRateLimit: 1000 #Set to 1000 qps => 3.6m by hour
   SmsDeadQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: ${AWS::StackName}-SmsDeadQueue
+      QueueName: !Sub '${AWS::StackName}-SmsDeadQueue'
       ReceiveMessageWaitTimeSeconds: 20
   SmsApiQueue: 
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: ${AWS::StackName}-SmsApiQueue
+      QueueName: !Sub '${AWS::StackName}-SmsApiQueue'
       VisibilityTimeout: 30
       ReceiveMessageWaitTimeSeconds: 20
       RedrivePolicy:
         deadLetterTargetArn:
           Fn::GetAtt: 
-            - "SmsDeadQueue"
-            - "Arn"
+            - 'SmsDeadQueue'
+            - 'Arn'
         maxReceiveCount: 2
   ExecuteEntryFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: ${AWS::StackName}-ExecuteEntryFunction
+      FunctionName: !Sub '${AWS::StackName}-ExecuteEntryFunction'
       Policies:
         - Statement:
             - Effect: Allow
@@ -88,7 +87,7 @@ Resources:
   PublishEntryFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: ${AWS::StackName}-PublishEntryFunction
+      FunctionName: !Sub '${AWS::StackName}-PublishEntryFunction'
       Environment:
         Variables:
           MCSecret: !Ref JwtTokenSecretMC
@@ -121,7 +120,7 @@ Resources:
   CallSmsApiFunction:
     Type: AWS::Serverless::Function 
     Properties:
-      FunctionName: ${AWS::StackName}-CallSmsApiFunction
+      FunctionName: !Sub '${AWS::StackName}-CallSmsApiFunction'
       Policies:
         - Statement:
             - Effect: Allow
@@ -145,8 +144,8 @@ Resources:
           Properties:
             Queue: 
               Fn::GetAtt: 
-                - "SmsApiQueue"
-                - "Arn"
+                - 'SmsApiQueue'
+                - 'Arn'
             MaximumBatchingWindowInSeconds: 30
             BatchSize: 1
   JsonWebTokenLayer:
@@ -164,29 +163,29 @@ Resources:
 
 Outputs:
   ExecuteApiUrl:
-    Description: "API Gateway endpoint URL for Prod stage for Execute function"
-    Value: !Sub "https://${HttpSmsMcApi}.execute-api.${AWS::Region}.amazonaws.com/"
+    Description: 'API Gateway endpoint URL for Prod stage for Execute function'
+    Value: !Sub 'https://${HttpSmsMcApi}.execute-api.${AWS::Region}.amazonaws.com/'
   ExecuteEntryFunction:
-    Description: "Lambda Function called by Executed route"
+    Description: 'Lambda Function called by Executed route'
     Value: !GetAtt ExecuteEntryFunction.Arn
   ExecuteEntryFunctionIamRole:
-    Description: "Implicit IAM Role created for Execute function"
+    Description: 'Implicit IAM Role created for Execute function'
     Value: !GetAtt ExecuteEntryFunctionRole.Arn
   PublishEntryFunction:
-    Description: "Lambda Function called by Save, Validate and Publish routes"
+    Description: 'Lambda Function called by Save, Validate and Publish routes'
     Value: !GetAtt PublishEntryFunction.Arn
   PublishEntryFunctionIamRole:
-    Description: "Implicit IAM Role created for Publish function"
+    Description: 'Implicit IAM Role created for Publish function'
     Value: !GetAtt PublishEntryFunctionRole.Arn
   CallSmsApiFunction:
-    Description: "Call SMS APILambda Function ARN"
+    Description: 'Call SMS APILambda Function ARN'
     Value: !GetAtt CallSmsApiFunction.Arn
   CallSmsApiFunctionIamRole:
-    Description: "Implicit IAM Role created for CallSmsApi function"
+    Description: 'Implicit IAM Role created for CallSmsApi function'
     Value: !GetAtt CallSmsApiFunctionRole.Arn
   SmsApiQueue:
-    Description: "SMS API Queue ARN"
+    Description: 'SMS API Queue ARN'
     Value: !GetAtt SmsApiQueue.Arn
   SmsDeadQueue:
-    Description: "SMS API Dead Queue ARN"
+    Description: 'SMS API Dead Queue ARN'
     Value: !GetAtt SmsDeadQueue.Arn
