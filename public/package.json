@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "postmonger": "^0.0.16"
+    "postmonger": "^0.0.16",
+    "requirejs": "^2.3.6"
   }
 }

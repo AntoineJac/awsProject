@@ -3,7 +3,6 @@
 ### AWS ###
 .aws-sam/
 .vscode/
-.public/
 
 ### Linux ###
 *~
