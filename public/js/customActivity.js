@@ -1,110 +1,255 @@
-define(['postmonger'], function (Postmonger) {
+define(['postmonger'], function(Postmonger) {
     'use strict';
 
+    /* DEPENDENCIES AND DECLARATION */
     let connection = new Postmonger.Session();
-    let authTokens = {};
-    let payload = {};
-
-    // Configuration variables
-    let eventSchema = ''; // variable is used in parseEventSchema()
-    let lastnameSchema = ''; // variable is used in parseEventSchema()
+    let steps = [{
+            label: 'Select Fields',
+            key: 'step1',
+            active: true
+        },
+        {
+            label: 'Preview & Confirm',
+            key: 'step2',
+            active: false
+        },
+    ];
+    let currentStep = steps[0].key;
     let eventDefinitionKey;
+    let messageObject = {};
+    let payload = {};
+    let messageContent = '';
+    let messageChannel = '';
+    let senderName = '';
+    let messageTemplate = '';
+    let characteristic = {};
+    let searchIndexes = {};
 
+
+    /* INITIALIZATION */
     $(window).ready(onRender);
-    connection.on('initActivity', initialize);
-    connection.on('clickedNext', save); //Save function within MC
+
+    // Postmonger events from SFMC
+    connection.on('initActivity', init);
+    connection.on('clickedNext', onClickedNext);
+    connection.on('clickedBack', onClickedBack);
+    connection.on('gotoStep', onGotoStep);
+    connection.on('requestedTriggerEventDefinition', onRequestedTriggerEventDefinition);
 
     function onRender() {
         // JB will respond the first time 'ready' is called with 'initActivity'
         connection.trigger('ready');
-        connection.trigger('requestTokens');
-        connection.trigger('requestEndpoints');
+        connection.trigger('updateButton', {
+            button: 'next',
+            enabled: false
+        });
+        connection.trigger('requestTriggerEventDefinition');
+        $('#spinner').hide();
     }
 
-    /**
-     * This function is to pull out the event definition within journey builder.
-     * With the eventDefinitionKey, you are able to pull out values that passes through the journey
-     */
-    connection.trigger('requestTriggerEventDefinition');
-    connection.on('requestedTriggerEventDefinition', function (eventDefinitionModel) {
+    //retrieves the existing configuration of the CA on initialization
+    //retrieves the existing configuration of the CA on initialization
+    function init(data) {
+        payload = data;
+
+        let hasInArguments = Boolean(
+            payload['arguments'] &&
+            payload['arguments'].execute &&
+            payload['arguments'].execute.inArguments &&
+            payload['arguments'].execute.inArguments.length > 0
+        );
+
+        if (hasInArguments) {
+            let args = data['arguments'].execute.inArguments[0];
+            messageContent = args.messageContent;
+            messageChannel = args.messageChannel;
+            senderName = args.senderName;
+            messageTemplate = args.messageTemplate;
+            characteristic = args.characteristic;
+            searchIndexes = args.searchIndexes;
+
+            $('#messageContent').val(messageContent);
+            $('#messageChannel').val(messageChannel);
+            $('#senderName').val(senderName);
+            $('#messageTemplate').val(messageTemplate);
+            $('#characteristic').val(characteristic);
+            $('#searchIndexes').val(searchIndexes);
+
+            messageChannel == 'SMART_SMS' ?
+            $('#smart_template_fields').show() :
+            $('#smart_template_fields').hide();
+             
+            updateNextButton(isStepOneValid());
+        }
+    }
+
+    //retrieves the dataExtensionKey and eventDefinitionKey on initialization 
+    function onRequestedTriggerEventDefinition(eventDefinitionModel) {
         if (eventDefinitionModel) {
-            eventDefinitionKey = eventDefinitionModel.eventDefinitionKey;
-            // console.log('Request Trigger >>>', JSON.stringify(eventDefinitionModel));
-        }
-    });
-
-    function initialize(data) {
-        if (data) {
-            payload = data;
-        }
-        initialLoad(data);
-        parseEventSchema();
-    }
-
-    /**
-     * Save function is fired off upon clicking of "Done" in Marketing Cloud
-     * The config.json will be updated here if there are any updates to be done via Front End UI
-     */
-    function save() {
-        payload['arguments'].execute.inArguments = [
-            {
-                SAMPLE_PARAM: "SAMPLE PARAM DATA FROM CONFIG.JSON"
+            if (eventDefinitionModel.dataExtensionId) {
+                eventDefinitionKey = eventDefinitionModel.eventDefinitionKey;
+            } else {
+                $('#notify').show();
+                $('#notify').text(
+                    'There is no entry source configured for this journey, please select an entry data extension'
+                );
             }
-        ];
-        payload['metaData'].isConfigured = true;
-        connection.trigger('updateActivity', payload);
-    }
-
-    /**
-     * 
-     * @param {*} data
-     * 
-     * This data param is the config json payload that needs to be loaded back into the UI upon opening the custom application within journey builder 
-     * This function is invoked when the user clicks on the custom activity in Marketing Cloud. 
-     * If there are information present, it should be loaded back into the appropriate places. 
-     * e.g. input fields, select lists
-     */
-    function initialLoad(data) {
+        }
     };
 
+    /**CONTROLS RELATED**/
 
-    /**
-     * This function is to pull the relevant information to create the schema of the objects
-     * 
-     * This function pulls out the schema for additional customizations that can be used.
-     * This function leverages on the required field of "Last Name" to pull out the overall event schema
-     * 
-     * returned variables of: lastnameSchema , eventSchema.
-     * eventSchema = Case:Contact:
-     * lastnameSchema = Case:Contact:<last_name_schema>
-     * 
-     * View the developer console in chrome upon opening of application in MC Journey Builder for further clarity.
-     */
-    function parseEventSchema() {
-        // Pulling data from the schema
-        connection.trigger('requestSchema');
-        connection.on('requestedSchema', function (data) {
-            // save schema
-            let dataJson = data['schema'];
+    //calls the functions that are needed for the next step of the custom activity
+    function onClickedNext() {
+        $('#notify').hide();
 
-            for (let i = 0; i < dataJson.length; i++) {
+        if (currentStep.key === 'step1') {
+            setReviewPageVariables();
+            connection.trigger('nextStep');
+        } else if (currentStep.key === 'step2') {
+            updateNextButton(false);
+            onActivityComplete();
+        } else {
+            connection.trigger('nextStep');
+        }
+    }
 
-                // Last name schema and creation of event schema
-                // Last name is a required field in SF so this is used to pull the event schema
-                if (dataJson[i].key.toLowerCase().replace(/ /g, '').indexOf("lastname") !== -1) {
-                    let splitArr = dataJson[i].key.split(".");
-                    lastnameSchema = splitArr[splitArr.length - 1];
-                    console.log('Last Name Schema >>', lastnameSchema);
+    function onClickedBack() {
+        connection.trigger('prevStep');
+    }
 
-                    let splitName = lastnameSchema.split(":");
-                    let reg = new RegExp(splitName[splitName.length - 1], "g");
-                    let oldSchema = splitArr[splitArr.length - 1];
+    function onGotoStep(step) {
+        showStep(step);
+        connection.trigger('ready');
+    }
 
-                    eventSchema = oldSchema.replace(reg, "");
-                    console.log("Event Schema >>", eventSchema);
-                }
-            }
+    function showStep(step, stepIndex) {
+        if (stepIndex && !step) {
+            step = steps[stepIndex - 1];
+        }
 
+        currentStep = step;
+
+        $('.step').hide();
+        $('#' + currentStep.key).show();
+    }
+
+    function updateNextButton(enabled) {
+        connection.trigger('updateButton', {
+            button: 'next',
+            enabled: enabled
         });
+    }
+
+    function isValidValue(value) {
+        return $.trim(value).length > 0;
+    }
+
+    /**STEP 1 RELATED FUNCTIONS**/
+
+    function isStepOneValid() {
+        return (
+            isValidValue(messageContent) && isValidValue(messageChannel) && isValidValue(senderName)
+        );
+    }
+
+    function getChannelValue() {
+        return $('#messageChannel option:selected')
+            .val()
+            .trim();
+    }
+
+    function getContentValue() {
+        return $('#messageContent')
+            .val()
+            .trim();
+    }
+
+    function getSenderNameValue() {
+        return $('#senderName')
+            .val()
+            .trim();
+    }
+
+    function getTemplateValue() {
+        return $('#messageTemplate')
+            .val()
+            .trim();
+    }
+
+    function getCharacteristicValue() {
+        return $('#characteristic')
+            .val()
+            .trim();
+    }
+
+    function getSearchIndexesValue() {
+        return $('#searchIndexes')
+            .val()
+            .trim();
+    }
+
+    $('#messageChannel').change(function() {
+        messageChannel = getChannelValue();
+        messageChannel == 'SMART_SMS' ?
+            $('#smart_template_fields').show() :
+            $('#smart_template_fields').hide();
+        updateNextButton(isStepOneValid());
+    });
+
+    $('#messageContent').keyup(function() {
+        messageContent = getContentValue();
+        updateNextButton(isStepOneValid());
+    });
+
+    $('#senderName').keyup(function() {
+        senderName = getSenderNameValue();
+        updateNextButton(isStepOneValid());
+    });
+
+    $('#messageTemplate').keyup(function() {
+        messageTemplate = getTemplateValue();
+        updateNextButton(isStepOneValid());
+    });
+
+    $('#characteristic').keyup(function() {
+        characteristic = getCharacteristicValue();
+        updateNextButton(isStepOneValid());
+    });
+
+    $('#searchIndexes').keyup(function() {
+        searchIndexes = getSearchIndexesValue();
+        updateNextButton(isStepOneValid());
+    });
+
+    /**STEP 2 RELATED FUNCTIONS**/
+    function setReviewPageVariables() {
+        messageObject['id'] = `{{Event.${eventDefinitionKey}.id}}`;
+        messageObject['mobileNumber'] = `{{Event.${eventDefinitionKey}.mobileNumber}}`;
+        messageObject['mobileCountryCode'] = `{{Event.${eventDefinitionKey}.mobileCountryCode}}`;
+        messageObject['ContactKey'] = '{{Contact.Key}}';
+
+        messageObject['messageContent'] = messageContent;
+        messageObject['messageChannel'] = messageChannel;
+        messageObject['senderName'] = senderName;
+
+        if (messageChannel == 'SMART_SMS') {
+            messageObject['messageTemplate'] = messageTemplate;
+            messageObject['characteristic'] = characteristic;
+            messageObject['searchIndexes'] = searchIndexes;
+        }
+        $('#review_message').text(JSON.stringify(messageObject, undefined, 2));
+    }
+
+
+    //saves the Custom Activity inarguments which will be referenced during journey run-time
+    function onActivityComplete() {
+        payload['arguments'].execute.inArguments.length = 0;
+        payload['arguments'].execute.inArguments.push(messageObject);
+
+        payload['metaData'].isConfigured = true;
+
+        connection.trigger('updateActivity', payload);
+        updateNextButton(true);
     }
 });

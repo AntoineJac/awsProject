@@ -1,14 +1,15 @@
 {
     "workflowApiVersion": "1.1",
     "metaData": {
-       "icon": "icon.png",
+       "icon": "images/iconMultichoice.png",
+       "iconSmall": "images/iconMultichoiceSmall.png",
        "category": "message",
        "configOnDrop": false
     },
     "type": "REST",
     "lang": {
        "en-US": {
-           "name": "JB REST Activity Message Multichoice",
+           "name": "REST Activity Multichoice",
            "description": "A REST activity used to send messages from JB to Multichoice customers"
        }
     },
@@ -16,7 +17,7 @@
         "execute": {
             "inArguments": [],
             "outArguments": [],
-            "url": "https://k7xu5llsm8.execute-api.af-south-1.amazonaws.com/execute",
+            "url": "https://5zg9paio15.execute-api.af-south-1.amazonaws.com/execute",
             "verb": "POST",
             "format": "json",
             "useJwt": true,
@@ -28,31 +29,40 @@
     },
     "configurationArguments": {
         "save": {
-            "url": "https://k7xu5llsm8.execute-api.af-south-1.amazonaws.com/save",
+            "url": "https://5zg9paio15.execute-api.af-south-1.amazonaws.com/save",
             "verb": "POST",
             "useJwt": true
         },
         "publish": {
-            "url": "https://k7xu5llsm8.execute-api.af-south-1.amazonaws.com/publish",
+            "url": "https://5zg9paio15.execute-api.af-south-1.amazonaws.com/publish",
             "verb": "POST",
             "useJwt": true
         },
         "stop": {
-            "url": "https://k7xu5llsm8.execute-api.af-south-1.amazonaws.com/stop",
+            "url": "https://5zg9paio15.execute-api.af-south-1.amazonaws.com/stop",
             "verb": "POST",
             "useJwt": true
         },
         "validate": {
-            "url": "https://k7xu5llsm8.execute-api.af-south-1.amazonaws.com`/validate",
+            "url": "https://5zg9paio15.execute-api.af-south-1.amazonaws.com/validate",
             "verb": "POST",
             "useJwt": true
         }
     },
-    "wizardSteps": [],
+    "wizardSteps": [
+        {
+            "label": "Select Fields",
+            "key": "step1"
+        },
+        {
+            "label": "Preview & Confirm",
+            "key": "step2"
+        }
+    ],
     "userInterfaces": {
        "configModal": {
-           "height": 200,
-           "width": 300,
+           "height": 400,
+           "width": 800,
            "fullscreen": false
        }
     },

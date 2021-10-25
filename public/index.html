@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie-edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MC Custom activty Multichoice</title>
+    <!--Load required modules-->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/require.js"></script>
+    <script type="text/javascript">
+      (function() {
+        var config = {
+          baseUrl: "js"
+        };
+        var dependencies = ["customActivity"];
+        require(config, dependencies);
+      })();
+    </script>
+    <!--Styles-->
+    <style type="text/css">
+      body {
+        padding: 20px;
+        margin: 0;
+      }
+      .step {
+        display: none;
+      }
+      #step1 {
+        display: block;
+      }
+    </style>
+    <link rel="stylesheet" type="text/css" href="styles/salesforce-lightning-design-system.css" />
+  </head>
+  <body>
+    <div class="slds-spinner_container" id="spinner" style="height:400px">
+      <div role="processing" class="slds-spinner slds-spinner_large slds-spinner_brand slds-spinner_delayed">
+        <span class="slds-assistive-text">Loading</span>
+        <div class="slds-spinner__dot-a"></div>
+        <div class="slds-spinner__dot-b"></div>
+      </div>
+    </div>
+    <div class="slds">
+      <!--START MESSAGE-->
+      <div id="notify" class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_warning" role="alert"></div>
+      <!--END MESSAGE-->
+      <!--START STEP 1-->
+      <div id="step1" class="step">
+        <input type="hidden" id="id" type="text">
+        <input type="hidden" id="mobileNumber" type="text">
+        <input type="hidden" id="mobileCountryCode" type="text">
+        <input type="hidden" id="ContactKey" type="text">
+        <div class="slds-form" role="list">
+          <div class="form__row">
+            <div class="slds-form__item" role="listitem">
+              <fieldset class="slds-form-element slds-form-element_compound" style="width:240px">
+                <div class="slds-form-element__control">
+                  <div class="slds-form-element__row">
+                    <div class="slds-size_1-of-1">
+                      <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="messageContent">Please enter the SMS text:</label>
+                        <div class="slds-form-element__control">
+                          <textarea id="messageContent" style="width:400px" rows="3" placeholder="Write SMS here..." class="slds-input" data-type="messageContent"></textarea>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="slds-form-element__row">
+                    <div class="slds-size_1-of-1">
+                      <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="messageChannel">Message Channel Type:</label>
+                        <div class="slds-form-element__control">
+                          <select id="messageChannel" class="slds-select">
+                            <option value="">--Please choose an option--</option>
+                            <option value="SMS">SMS</option>
+                            <option value="SMART_SMS">SMART_SMS</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="slds-form-element__row">
+                    <div class="slds-size_1-of-1">
+                      <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="senderName">Sender Name:</label>
+                        <div class="slds-form-element__control">
+                          <input type="text" id="senderName" data-type="senderName" class="slds-input" maxlength="10" placeholder="<MaxLength10>" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <br>
+                <div class="slds-form-element__control" id="smart_template_fields" style="display:none">
+                  <label class="slds-form-element__label" for="senderName">Additional fields for Smart SMS Type:</label>
+                  <div class="slds-form-element__row">
+                    <div class="slds-size_1-of-1">
+                      <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="messageTemplate">Message Template:</label>
+                        <div class="slds-form-element__control">
+                          <input type="text" id="messageTemplate" data-type="messageTemplate" class="slds-input" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="slds-form-element__row">
+                    <div class="slds-size_1-of-1">
+                      <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="characteristic">characteristic:</label>
+                        <div class="slds-form-element__control">
+                          <input type="text" id="characteristic" data-type="characteristic" class="slds-input" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="slds-form-element__row">
+                    <div class="slds-size_1-of-1">
+                      <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="searchIndexes">searchIndexes:</label>
+                        <div class="slds-form-element__control">
+                          <input type="text" id="searchIndexes" data-type="searchIndexes" class="slds-input" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--END STEP 1-->
+      <!--START STEP 2-->
+      <div id="step2" class="step">
+        <div class="slds-form" role="list" style="height:400px" id="review-form">
+          <div class="slds-form__row">
+            <div class="slds-form__item" role="listitem">
+              <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                <span class="slds-form-element__label">You are going to send the following message:</span>
+                <br>
+                <div class="slds-form-element__control">
+                  <pre readonly class="slds-form-element__label" id="review_message"></pre>
+                </div>
+                <br>
+              </div>
+            </div>
+          </div>
+          <br id="review-dynamic-fields" />
+        </div>
+      </div>
+      <!--END STEP 2-->
+    </div>
+  </body>
+</html>

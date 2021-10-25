@@ -19,19 +19,19 @@ Parameters:
     JwtTokenSecretMC:
         Description: 'Marketing Cloud JWT Token'
         Type: 'AWS::SSM::Parameter::Value<String>'
-        Default: 'JwtTokenSecretMC'
+        Default: !Sub '${AWS::StackName}-JwtTokenSecretMC'
     SmsApiGatewayKey:
         Description: 'API SMS Gateway Key'
         Type: 'AWS::SSM::Parameter::Value<String>'
-        Default: 'SmsApiGatewayKey'
+        Default: !Sub '${AWS::StackName}-SmsApiGatewayKey'
     EndpointUrlSMS:
         Description: 'API SMS Gateway Endpoint URL'
         Type: 'AWS::SSM::Parameter::Value<String>'
-        Default: 'EndpointUrlSMS'
+        Default: !Sub '${AWS::StackName}-EndpointUrlSMS'
     SmsApiConcurrency:
         Description: 'API SMS Gateway Concurrency'
         Type: 'AWS::SSM::Parameter::Value<String>'
-        Default: 'SmsApiConcurrency'
+        Default: !Sub '${AWS::StackName}-SmsApiConcurrency'
 Resources:
   HttpSmsMcApi:
     Type: AWS::Serverless::HttpApi
