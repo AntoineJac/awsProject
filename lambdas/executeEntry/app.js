@@ -69,9 +69,9 @@ const invokeSmsApiLambda = async (payloadSMS) => {
 };
 /* eslint-enable no-unused-vars */
 
-const mcActivityExecute = async (event) => new Promise((resolve, reject) => {
+const mcActivityExecute = async (decodeBase6JWT) => new Promise((resolve, reject) => {
   // Decode the post body test
-  utilsLayer.processMC(event.body)
+  utilsLayer.processMC(decodeBase6JWT)
     .then((decoded) => {
       if (decoded) {
         let payloadSMS = returnPayloadSms(decoded);
@@ -111,7 +111,9 @@ const mcActivityExecute = async (event) => new Promise((resolve, reject) => {
  *
  */
 exports.lambdaHandler = async (event, context, callback) => {
-  await mcActivityExecute(event, context)
+  const jwtTokenString = JSON.stringify(event.body);
+  const decodeBase6JWT = Buffer.from(jwtTokenString, 'base64').toString('utf-8');
+  await mcActivityExecute(decodeBase6JWT, context)
     .then((response) => callback(null, response))
     .catch((err) => callback(null, {
       statusCode: err.code || 400,

@@ -7,22 +7,3 @@
   "senderName": "TestMC",
   "ContactKey": "14bc19e6-746e-42e2-a387-64708b8fbd0a"
 }
-
-{
-  "id": "{{Event.undefined.id}}",
-  "mobileNumber": "{{Event.undefined.mobileNumber}}",
-  "mobileCountryCode": "{{Event.undefined.mobileCountryCode}}",
-  "ContactKey": "{{Contact.Key}}",
-  "messageContent": "dddd",
-  "messageChannel": "SMS",
-  "senderName": "dddd"
-}
-
-{
-  "messageChannel": "SMS",
-  "messageContent": "This is a test that all is OK!",
-  "senderName": "TestMC",
-  "messageTemplate": "templateSMS",
-  "userCharacteristic": "{}",  -> name value valueType
-  "usersearchIndexes": "{}" -> name
-}
