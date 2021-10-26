@@ -22,8 +22,8 @@ define(['postmonger'], function(Postmonger) {
     let messageChannel = '';
     let senderName = '';
     let messageTemplate = '';
-    let characteristic = {};
-    let searchIndexes = {};
+    let characteristic = [];
+    let searchIndexes = [];
 
 
     /* INITIALIZATION */
@@ -235,8 +235,8 @@ define(['postmonger'], function(Postmonger) {
 
         if (messageChannel == 'SMART_SMS') {
             messageObject['messageTemplate'] = messageTemplate;
-            messageObject['characteristic'] = characteristic;
-            messageObject['searchIndexes'] = searchIndexes;
+            messageObject['characteristic'] = [characteristic];
+            messageObject['searchIndexes'] = [searchIndexes];
         }
         $('#review_message').text(JSON.stringify(messageObject, undefined, 2));
     }
