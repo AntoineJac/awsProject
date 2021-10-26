@@ -65,8 +65,8 @@ define(['postmonger'], function(Postmonger) {
             messageChannel = args.messageChannel;
             senderName = args.senderName;
             messageTemplate = args.messageTemplate;
-            characteristic = args.characteristic;
-            searchIndexes = args.searchIndexes;
+            characteristic = JSON.stringify(args.characteristic).slice(1,-1);
+            searchIndexes = JSON.stringify(args.searchIndexes).slice(1,-1);
 
             $('#messageContent').val(messageContent);
             $('#messageChannel').val(messageChannel);
@@ -75,7 +75,7 @@ define(['postmonger'], function(Postmonger) {
             $('#characteristic').val(characteristic);
             $('#searchIndexes').val(searchIndexes);
 
-            messageChannel == 'SMART_SMS' ?
+            messageChannel == 'S2MS' ?
             $('#smart_template_fields').show() :
             $('#smart_template_fields').hide();
              
@@ -89,6 +89,7 @@ define(['postmonger'], function(Postmonger) {
             if (eventDefinitionModel.dataExtensionId) {
                 eventDefinitionKey = eventDefinitionModel.eventDefinitionKey;
             } else {
+                $('#notify').addClass('notifyActive');
                 $('#notify').show();
                 $('#notify').text(
                     'There is no entry source configured for this journey, please select an entry data extension'
@@ -150,6 +151,7 @@ define(['postmonger'], function(Postmonger) {
     function isStepOneValid() {
         return (
             isValidValue(messageContent) && isValidValue(messageChannel) && isValidValue(senderName)
+                && prepareCharacteristic() && prepareSearchIndexes()
         );
     }
 
@@ -189,9 +191,69 @@ define(['postmonger'], function(Postmonger) {
             .trim();
     }
 
+    function prepareCharacteristic() {
+        characteristic = getCharacteristicValue();
+        characteristic = characteristic.replace(/\s/g,'').replace('},{','}},{{');
+        characteristic = characteristic.split('},{');
+
+        if (characteristic[0]) {
+            try {
+                characteristic.forEach((char, index) => {
+                    let tempChar = JSON.parse(char);
+                    if (!tempChar.value) throw new Error();
+                    if (tempChar.value.search('{{Event.') < 0) {
+                        tempChar.value = `{{Event.${eventDefinitionKey}.${tempChar.value}}}`
+                    }
+                    characteristic[index] = tempChar;
+                });
+                $('#notify').hide();
+                return true;
+            } catch (err) {
+                $('#notify').addClass('notifyActive');
+                $('#notify').show();
+                $('#notify').text(
+                    'There is an error with your characteristic object, please fix to continue'
+                );
+                return false;
+            }
+        } else {
+            characteristic = [];
+            $('#notify').hide();
+            return true;
+        }
+    }
+
+    function prepareSearchIndexes() {
+        searchIndexes = getSearchIndexesValue();
+        searchIndexes = searchIndexes.replace(/\s/g,'').replace('},{','}},{{');
+        searchIndexes = searchIndexes.split('},{');
+
+        if (searchIndexes[0]) {
+            try {
+                searchIndexes.forEach((char, index) => {
+                    let tempChar = JSON.parse(char);
+                    searchIndexes[index] = tempChar;
+                });
+                $('#notify').hide();
+                return true;
+            } catch (err) {
+                $('#notify').addClass('notifyActive');
+                $('#notify').show();
+                $('#notify').text(
+                    'There is an error with your searchIndexes object, please fix to continue'
+                );
+                return false;
+            }
+        } else {
+            searchIndexes = [];
+            $('#notify').hide();
+            return true;
+        }
+    }
+
     $('#messageChannel').change(function() {
         messageChannel = getChannelValue();
-        messageChannel == 'SMART_SMS' ?
+        messageChannel == 'S2MS' ?
             $('#smart_template_fields').show() :
             $('#smart_template_fields').hide();
         updateNextButton(isStepOneValid());
@@ -213,30 +275,32 @@ define(['postmonger'], function(Postmonger) {
     });
 
     $('#characteristic').keyup(function() {
-        characteristic = getCharacteristicValue();
         updateNextButton(isStepOneValid());
     });
 
     $('#searchIndexes').keyup(function() {
-        searchIndexes = getSearchIndexesValue();
         updateNextButton(isStepOneValid());
     });
 
     /**STEP 2 RELATED FUNCTIONS**/
     function setReviewPageVariables() {
+        messageObject = {};
         messageObject['id'] = `{{Event.${eventDefinitionKey}.id}}`;
         messageObject['mobileNumber'] = `{{Event.${eventDefinitionKey}.mobileNumber}}`;
         messageObject['mobileCountryCode'] = `{{Event.${eventDefinitionKey}.mobileCountryCode}}`;
         messageObject['ContactKey'] = '{{Contact.Key}}';
-
         messageObject['messageContent'] = messageContent;
-        messageObject['messageChannel'] = messageChannel;
         messageObject['senderName'] = senderName;
 
-        if (messageChannel == 'SMART_SMS') {
+        if (messageChannel == 'S2MS') {
+            messageObject['mobileCountryCode'] = 'ZAF4';
+            messageObject['messageChannel'] = 'S2MS';
             messageObject['messageTemplate'] = messageTemplate;
-            messageObject['characteristic'] = [characteristic];
-            messageObject['searchIndexes'] = [searchIndexes];
+            messageObject['characteristic'] = characteristic;
+            messageObject['searchIndexes'] = searchIndexes;
+        } else {
+            messageObject['messageChannel'] = messageChannel;
+            messageObject['mobileCountryCode'] = `{{Event.${eventDefinitionKey}.mobileCountryCode}}`;
         }
         $('#review_message').text(JSON.stringify(messageObject, undefined, 2));
     }

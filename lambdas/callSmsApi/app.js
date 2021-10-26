@@ -69,8 +69,8 @@ const replaceTemplate = (data) => {
   templateSMS.countryCode = data.mobileCountryCode;
   templateSMS.messageType = data.messageChannel;
   templateSMS.template = data.messageTemplate;
-  templateSMS.characteristic = data.messageCharacteristic;
-  templateSMS.searchIndexes = data.messageSearchIndexes;
+  templateSMS.characteristic = data.characteristic;
+  templateSMS.searchIndexes = data.searchIndexes;
   templateSMS.receiver[0].id = data.ContactKey;
   templateSMS.receiver[0].phoneNumber = data.mobileNumber;
   templateSMS.receiver[0].party.id = data.ContactKey;

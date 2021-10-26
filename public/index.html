@@ -23,11 +23,17 @@
         padding: 20px;
         margin: 0;
       }
+      .notifyActive {
+        z-index: 10000;
+        position: fixed !important;
+        top: 0px;
+      }
       .step {
         display: none;
       }
       #step1 {
         display: block;
+        padding-top: 20px;
       }
     </style>
     <link rel="stylesheet" type="text/css" href="styles/salesforce-lightning-design-system.css" />
@@ -60,7 +66,10 @@
                       <div class="slds-form-element">
                         <label class="slds-form-element__label" for="messageContent">Please enter the SMS text:</label>
                         <div class="slds-form-element__control">
-                          <textarea id="messageContent" style="width:400px" rows="3" placeholder="Write SMS here..." class="slds-input" data-type="messageContent"></textarea>
+                          <textarea id="messageContent" style="width:500px" rows="3" 
+                            placeholder="Write SMS here..." 
+                            data-type="messageContent" class="slds-input" >
+                          </textarea>
                         </div>
                       </div>
                     </div>
@@ -73,7 +82,7 @@
                           <select id="messageChannel" class="slds-select">
                             <option value="">--Please choose an option--</option>
                             <option value="SMS">SMS</option>
-                            <option value="SMART_SMS">SMART_SMS</option>
+                            <option value="S2MS">SMART_SMS</option>
                           </select>
                         </div>
                       </div>
@@ -110,7 +119,10 @@
                       <div class="slds-form-element">
                         <label class="slds-form-element__label" for="characteristic">characteristic:</label>
                         <div class="slds-form-element__control">
-                          <input type="text" id="characteristic" data-type="characteristic" class="slds-input" />
+                          <textarea id="characteristic" style="width:500px" rows="2" 
+                            placeholder="Use '/'' as separtor, ex: {&quot;name&quot;:&quot;${surname},&quot;value&quot;:&quot;DE_attr&quot;,&quot;valueType&quot;:&quot;string&quot;}/{&quot;name&quot;:&quot;${customerNumber},&quot;value&quot;:&quot;DE_attr&quot;,&quot;valueType&quot;:&quot;string&quot;}"
+                            data-type="searchIndexes" class="slds-input">
+                          </textarea>
                         </div>
                       </div>
                     </div>
@@ -120,7 +132,10 @@
                       <div class="slds-form-element">
                         <label class="slds-form-element__label" for="searchIndexes">searchIndexes:</label>
                         <div class="slds-form-element__control">
-                          <input type="text" id="searchIndexes" data-type="searchIndexes" class="slds-input" />
+                          <textarea type="text" id="searchIndexes" style="width:500px" rows="2"
+                            placeholder="Use '/'' as separtor, ex: {&quot;name&quot;:&quot;${surname}&quot;}/{&quot;name&quot;:&quot;${customerNumber}&quot;}"
+                            data-type="characteristic" class="slds-input">
+                          </textarea>
                         </div>
                       </div>
                     </div>
