@@ -66,10 +66,9 @@
                       <div class="slds-form-element">
                         <label class="slds-form-element__label" for="messageContent">Please enter the SMS text:</label>
                         <div class="slds-form-element__control">
-                          <textarea id="messageContent" style="width:500px" rows="3" 
+                          <textarea id="messageContent" style="width:490px" rows="3" 
                             placeholder="Write SMS here..." 
-                            data-type="messageContent" class="slds-input" >
-                          </textarea>
+                            data-type="messageContent" class="slds-input" value=""></textarea>
                         </div>
                       </div>
                     </div>
@@ -87,6 +86,20 @@
                         </div>
                       </div>
                     </div>
+                    <div class="slds-size_1-of-1">
+                      <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="priority">Priority:</label>
+                        <div class="slds-form-element__control">
+                          <select id="priority" class="slds-select">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div class="slds-form-element__row">
                     <div class="slds-size_1-of-1">
@@ -94,6 +107,17 @@
                         <label class="slds-form-element__label" for="senderName">Sender Name:</label>
                         <div class="slds-form-element__control">
                           <input type="text" id="senderName" data-type="senderName" class="slds-input" maxlength="10" placeholder="<MaxLength10>" />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="slds-size_1-of-1">
+                      <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="isSensitive">Is Sensitive:</label>
+                        <div class="slds-form-element__control">
+                          <select id="isSensitive" class="slds-select">
+                            <option value="False">False</option>
+                            <option value="True">True</option>
+                          </select>
                         </div>
                       </div>
                     </div>
@@ -119,10 +143,9 @@
                       <div class="slds-form-element">
                         <label class="slds-form-element__label" for="characteristic">characteristic:</label>
                         <div class="slds-form-element__control">
-                          <textarea id="characteristic" style="width:500px" rows="2" 
+                          <textarea id="characteristic" style="width:490px" rows="2" 
                             placeholder="ex: {&quot;name&quot;:&quot;${surname},&quot;value&quot;:&quot;DE_attr&quot;,&quot;valueType&quot;:&quot;string&quot;},{&quot;name&quot;:&quot;${customerNumber},&quot;value&quot;:&quot;DE_attr&quot;,&quot;valueType&quot;:&quot;string&quot;}"
-                            data-type="searchIndexes" class="slds-input">
-                          </textarea>
+                            data-type="searchIndexes" class="slds-input" value=""></textarea>
                         </div>
                       </div>
                     </div>
@@ -132,10 +155,9 @@
                       <div class="slds-form-element">
                         <label class="slds-form-element__label" for="searchIndexes">searchIndexes:</label>
                         <div class="slds-form-element__control">
-                          <textarea type="text" id="searchIndexes" style="width:500px" rows="2"
+                          <textarea type="text" id="searchIndexes" style="width:490px" rows="2"
                             placeholder="ex: {&quot;name&quot;:&quot;${surname}&quot;},{&quot;name&quot;:&quot;${customerNumber}&quot;}"
-                            data-type="characteristic" class="slds-input">
-                          </textarea>
+                            data-type="characteristic" class="slds-input" value=""></textarea>
                         </div>
                       </div>
                     </div>

@@ -21,10 +21,48 @@ define(['postmonger'], function(Postmonger) {
     let messageContent = '';
     let messageChannel = '';
     let senderName = '';
+    let priority = '';
+    let isSensitive = '';
     let messageTemplate = '';
     let characteristic = [];
     let searchIndexes = [];
 
+    const templateSMS = {
+        id: '',
+        content: '',
+        isSensitive: '',
+        description: 'Message Sent by Custom Activity in Journey Builder',
+        countryCode: '',
+        messageType: '',
+        template: '',
+        characteristic: [],
+        searchIndexes: [],
+        priority: '',
+        receiver: [
+          {
+            id: '',
+            name: 'ContactKey',
+            phoneNumber: '',
+            party: {
+              id: '',
+              role: 'Customer',
+              name: 'ContactKey',
+              '@referredType': 'Individual',
+            },
+          },
+        ],
+        sender: {
+          id: 'JourneyBuilderCustomActivity',
+          name: 'MarketingCloud',
+          phoneNumber: '919743464658',
+          party: {
+            id: 'JourneyBuilderCustomActivity',
+            role: 'SmsApiGateway',
+            name: '',
+            '@referredType': 'externalSystem',
+          },
+        },
+    };
 
     /* INITIALIZATION */
     $(window).ready(onRender);
@@ -64,6 +102,8 @@ define(['postmonger'], function(Postmonger) {
             messageContent = args.messageContent;
             messageChannel = args.messageChannel;
             senderName = args.senderName;
+            priority = args.priority;
+            isSensitive = args.isSensitive;
             messageTemplate = args.messageTemplate;
             characteristic = JSON.stringify(args.characteristic).slice(1,-1);
             searchIndexes = JSON.stringify(args.searchIndexes).slice(1,-1);
@@ -71,6 +111,8 @@ define(['postmonger'], function(Postmonger) {
             $('#messageContent').val(messageContent);
             $('#messageChannel').val(messageChannel);
             $('#senderName').val(senderName);
+            $('#priority').val(priority);
+            $('#isSensitive').val(isSensitive);
             $('#messageTemplate').val(messageTemplate);
             $('#characteristic').val(characteristic);
             $('#searchIndexes').val(searchIndexes);
@@ -151,12 +193,25 @@ define(['postmonger'], function(Postmonger) {
     function isStepOneValid() {
         return (
             isValidValue(messageContent) && isValidValue(messageChannel) && isValidValue(senderName)
+                && isValidValue(priority) && isValidValue(isSensitive)
                 && prepareCharacteristic() && prepareSearchIndexes()
         );
     }
 
     function getChannelValue() {
         return $('#messageChannel option:selected')
+            .val()
+            .trim();
+    }
+
+    function getPriorityValue() {
+        return $('#priority option:selected')
+            .val()
+            .trim();
+    }
+
+    function getIsSensitiveValue() {
+        return $('#isSensitive option:selected')
             .val()
             .trim();
     }
@@ -259,6 +314,16 @@ define(['postmonger'], function(Postmonger) {
         updateNextButton(isStepOneValid());
     });
 
+    $('#priority').change(function() {
+        priority = getPriorityValue();
+        updateNextButton(isStepOneValid());
+    });
+
+    $('#isSensitive').change(function() {
+        isSensitive = getIsSensitiveValue();
+        updateNextButton(isStepOneValid());
+    });
+
     $('#messageContent').keyup(function() {
         messageContent = getContentValue();
         updateNextButton(isStepOneValid());
@@ -291,6 +356,8 @@ define(['postmonger'], function(Postmonger) {
         messageObject['ContactKey'] = '{{Contact.Key}}';
         messageObject['messageContent'] = messageContent;
         messageObject['senderName'] = senderName;
+        messageObject['priority'] = priority;
+        messageObject['isSensitive'] = isSensitive;
 
         if (messageChannel == 'S2MS') {
             messageObject['mobileCountryCode'] = 'ZAF4';
@@ -302,7 +369,22 @@ define(['postmonger'], function(Postmonger) {
             messageObject['messageChannel'] = messageChannel;
             messageObject['mobileCountryCode'] = `{{Event.${eventDefinitionKey}.mobileCountryCode}}`;
         }
-        $('#review_message').text(JSON.stringify(messageObject, undefined, 2));
+
+        templateSMS.id = messageObject.id;
+        templateSMS.content = messageObject.messageContent;
+        templateSMS.countryCode = messageObject.mobileCountryCode;
+        templateSMS.messageType = messageObject.messageChannel;
+        templateSMS.priority = messageObject.priority;
+        templateSMS.isSensitive = messageObject.isSensitive;
+        templateSMS.template = messageObject.messageTemplate;
+        templateSMS.characteristic = messageObject.characteristic;
+        templateSMS.searchIndexes = messageObject.searchIndexes;
+        templateSMS.receiver[0].id = messageObject.ContactKey;
+        templateSMS.receiver[0].phoneNumber = messageObject.mobileNumber;
+        templateSMS.receiver[0].party.id = messageObject.ContactKey;
+        templateSMS.sender.party.name = messageObject.senderName;
+
+        $('#review_message').text(JSON.stringify(templateSMS, undefined, 2));
     }
 
 
