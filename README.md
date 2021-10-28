@@ -80,7 +80,8 @@ testAntoineSamConsol$ curl http://localhost:3000/
 
 <img src="images/CA_Smart_SMS.png"
      alt="Markdown Monster icon"
-     style="width: 75%; margin: auto;" />
+     style="width: 75%; margin: auto;
+     display:block;" />
 
 The SAM CLI reads the application template to determine the API's routes and the functions that they invoke. The `Events` property on each function's definition includes the route and method for each path.
 
