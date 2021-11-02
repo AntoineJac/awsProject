@@ -51,7 +51,7 @@ jobs:
         regionName: $(AWS_REGION)
         scriptType: "inline"
         inlineScript: |
-          sam deploy
+          sam deploy \
           --force-upload \
           --no-confirm-changeset \
           --no-fail-on-empty-changeset \
