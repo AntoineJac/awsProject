@@ -5,6 +5,10 @@ env:
   AWS_REGION: af-south-1
   AWS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  MC_JWT_SECRET: ${{ secrets.MC_JWT_SECRET }}
+  SMS_GATEWAY_KEY: ${{ secrets.SMS_GATEWAY_KEY }}
+  SMS_API_CONCURRENCY: ${{ secrets.SMS_API_CONCURRENCY }}
+  ENDPOINT_URL_SMS: ${{ secrets.ENDPOINT_URL_SMS }}
 
 on:
   push:
@@ -34,5 +38,16 @@ jobs:
 # Run Unit tests- Specify unit tests here 
 
 # sam deploy
-      - run: sam deploy --force-upload --no-confirm-changeset --no-fail-on-empty-changeset --stack-name ${{ env.STACK_NAME }} --s3-bucket ${{ env.S3_BUCKET_NAME }} --capabilities CAPABILITY_IAM --region ${{ env.AWS_REGION }}
-      - run: aws s3 sync ./public s3://${{ env.S3_BUCKET_NAME_PUBLIC }} --region ${{ env.AWS_REGION }} --acl public-read
+      - run: |
+          sam deploy --force-upload --no-confirm-changeset --no-fail-on-empty-changeset \
+          --stack-name ${{ env.STACK_NAME }} --s3-bucket ${{ env.S3_BUCKET_NAME }} \
+          --capabilities CAPABILITY_IAM --region ${{ env.AWS_REGION }} \
+          --parameter-overrides \
+          JwtTokenSecretMC=$(MC_JWT_SECRET) \
+          SmsApiGatewayKey=$(SMS_GATEWAY_KEY) \
+          SmsApiConcurrency=$(SMS_API_CONCURRENCY) \
+          EndpointUrlSMS=$(ENDPOINT_URL_SMS)
+
+      - run:  |
+          aws s3 sync ./public s3://${{ env.S3_BUCKET_NAME_PUBLIC }} --region ${{ env.AWS_REGION }} \
+          --acl public-read --size-only

@@ -3,15 +3,7 @@
       {
           "messageId": "11d6ee51-4cc7-4302-9e22-7cd8afdaadf5",
           "receiptHandle": "AQEBBX8nesZEXmkhsmZeyIE8iQAMig7qw...",
-          "body": {
-            "id": "154a240a-b30e-441d-9087-a23e8be46251",
-            "messageChannel": "SMS",
-            "messageContent": "This is a test that all is OK!",
-            "mobileNumber": "33615327982",
-            "mobileCountryCode": "FRA",
-            "senderName": "TestMC",
-            "ContactKey": "14bc19e6-746e-42e2-a387-64708b8fbd0a"
-          },
+          "body": "{\"id\": \"154a240a-b30e-441d-9087-a23e8be46251\", \"messageChannel\": \"SMS\", \"messageContent\": \"This is a test that all is OK!\", \"mobileNumber\": \"33615327982\", \"mobileCountryCode\": \"FRA\", \"senderName\": \"TestMC\", \"ContactKey\": \"14bc19e6-746e-42e2-a387-64708b8fbd0a\" }",
           "attributes": {
               "ApproximateReceiveCount": "1",
               "SentTimestamp": "1573251510774",
