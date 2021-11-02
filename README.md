@@ -37,6 +37,7 @@ It includes the following ressources and folders.
 **Current batch size is 1, when implementing the bulk api it is essential to delete the message manually using the sqs.deleteMessage method.**
 
 ## Application and Resources settings
+
 The default application settings are configured to fit a maximum concurrency of 150 and single API call.
 
 SQS Queues settings:
@@ -84,6 +85,14 @@ API Gateway settings:
 ## Deploy the application
 
 The application will be built and deployed directly from Azure Pipelines or Github Actions.
+
+Github Actions:
+
+![A test image](images/Github_Actions.png)
+
+If using Github action, you will need to create the variables under Settings and Secrets.
+
+Azure Pipelines:
 
 ![A test image](images/Azure_CICD.png)
 
