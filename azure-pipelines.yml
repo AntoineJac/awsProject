@@ -43,8 +43,7 @@ jobs:
         scriptType: 'inline'
         disableAutoCwd: true
         inlineScript: |
-          sam build --use-container \
-          --template-file template.yaml
+          sam build --use-container
     - task: AWSShellScript@1
       displayName: Deploy Infrastructure
       inputs:
@@ -52,8 +51,7 @@ jobs:
         regionName: $(AWS_REGION)
         scriptType: "inline"
         inlineScript: |
-          sam deploy \
-          --template-file template.yaml \
+          sam deploy
           --force-upload \
           --no-confirm-changeset \
           --no-fail-on-empty-changeset \
