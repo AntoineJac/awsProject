@@ -1,5 +1,5 @@
 env:
-  STACK_NAME: MC-CA-API
+  AWS_STACK_NAME: MC-CA-API
   S3_BUCKET_NAME: testsiteantoine
   S3_BUCKET_NAME_PUBLIC: 	testsiteantoineform
   AWS_REGION: af-south-1
@@ -40,13 +40,13 @@ jobs:
 # sam deploy
       - run: |
           sam deploy --force-upload --no-confirm-changeset --no-fail-on-empty-changeset \
-          --stack-name ${{ env.STACK_NAME }} --s3-bucket ${{ env.S3_BUCKET_NAME }} \
+          --stack-name ${{ env.AWS_STACK_NAME }} --s3-bucket ${{ env.S3_BUCKET_NAME }} \
           --capabilities CAPABILITY_IAM --region ${{ env.AWS_REGION }} \
           --parameter-overrides \
-          JwtTokenSecretMC=$(MC_JWT_SECRET) \
-          SmsApiGatewayKey=$(SMS_GATEWAY_KEY) \
-          SmsApiConcurrency=$(SMS_API_CONCURRENCY) \
-          EndpointUrlSMS=$(ENDPOINT_URL_SMS)
+          JwtTokenSecretMC=${{ env.MC_JWT_SECRET }} \
+          SmsApiGatewayKey=${{ env.SMS_GATEWAY_KEY }} \
+          SmsApiConcurrency=${{ env.SMS_API_CONCURRENCY }} \
+          EndpointUrlSMS=${{ env.ENDPOINT_URL_SMS }}
 
       - run:  |
           aws s3 sync ./public s3://${{ env.S3_BUCKET_NAME_PUBLIC }} --region ${{ env.AWS_REGION }} \
