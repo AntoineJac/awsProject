@@ -88,9 +88,10 @@ The application will be built and deployed directly from Azure Pipelines or Gith
 
 Github Actions:
 
+If using Github action, you will need to create the variables under Settings and Secrets:
+
 ![A test image](images/Github_Actions.png)
 
-If using Github action, you will need to create the variables under Settings and Secrets.
 
 Azure Pipelines:
 
