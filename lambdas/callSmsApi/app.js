@@ -1,4 +1,6 @@
+/* eslint-disable */
 const axios = require('axios');
+/* eslint-enable */
 
 const { SmsApiGatewayKey, EndpointUrlSMS } = process.env;
 

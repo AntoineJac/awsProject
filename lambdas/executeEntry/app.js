@@ -3,8 +3,7 @@ const utilsLayer = require('/opt/nodejs/index');
 const AWS = require('aws-sdk');
 /* eslint-enable */
 
-const smsQueueUrl = 'https://sqs.af-south-1.amazonaws.com/340849193897/MC-CA-API-SmsApiQueue';
-const smsApiFunction = 'MC-CA-API-CallSmsApiFunction';
+const { smsQueueUrl, smsApiFunction } = process.env;
 const lambda = new AWS.Lambda();
 const sqs = new AWS.SQS();
 

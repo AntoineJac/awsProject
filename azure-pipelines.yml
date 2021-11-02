@@ -1,0 +1,79 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+
+trigger:
+- main
+- test
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+- ${{ if eq(variables['build.SourceBranchName'], 'main') }}:
+  - group: 'mc-custom-activity-prod-env-variable-group'
+- ${{ if eq(variables['build.SourceBranchName'], 'test') }}:
+  - group: 'mc-custom-activity-uat-env-variable-group'
+
+jobs:
+- job: Build_Test
+  steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '12.0.x'
+      displayName: 'Install Node.js'
+    - script: |
+        npm install
+        npm run lint
+        if [ $? -ne 0 ]; then
+        exit 1
+        fi
+        npm run test
+        npm prune --production
+      displayName: 'npm install, lint, and test'
+
+- job: Package
+  dependsOn: Build_Test
+  steps:
+    - task: AWSShellScript@1
+      displayName: Package
+      inputs:
+        awsCredentials: AwsServiceConnection
+        regionName: $(AWS_REGION)
+        scriptType: 'inline'
+        disableAutoCwd: true
+        inlineScript: |
+          sam build --use-container \
+          --template-file template.yaml
+
+- job: Deploy
+  dependsOn: Package
+  steps:
+    - task: AWSShellScript@1
+      displayName: Deploy Infrastructure
+      inputs:
+        awsCredentials: AwsServiceConnection
+        regionName: $(AWS_REGION)
+        scriptType: "inline"
+        inlineScript: |
+          sam deploy \
+          --template-file template.yaml \
+          --force-upload \
+          --no-confirm-changeset \
+          --no-fail-on-empty-changeset \
+          --stack-name $(AWS_STACK_NAME) \
+          --s3-bucket $(AWS_BUCKET_NAME) \
+          --capabilities CAPABILITY_IAM \
+          --region $(AWS_REGION) \
+          --parameter-overrides EndpointUrlSMS=$(ENDPOINT_URL_SMS)
+    - task: AWSShellScript@1
+      displayName: Deploy Public Folder
+      inputs:
+        awsCredentials: AwsServiceConnection
+        regionName: $(AWS_REGION)
+        scriptType: "inline"
+        inlineScript: |
+          aws s3 sync ./public s3://$(AWS_BUCKET_NAME_PUBLIC) \
+          --region $(AWS_REGION) \
+          --acl public-read \
+          --size-only

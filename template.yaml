@@ -27,8 +27,7 @@ Parameters:
         Default: 'SmsApiGatewayKey'
     EndpointUrlSMS:
         Description: 'API SMS Gateway Endpoint URL'
-        Type: 'AWS::SSM::Parameter::Value<String>'
-        Default: 'EndpointUrlSMS'
+        Type: 'String'
     SmsApiConcurrency:
         Description: 'API SMS Gateway Concurrency'
         Type: 'AWS::SSM::Parameter::Value<String>'
@@ -73,6 +72,8 @@ Resources:
       Environment:
         Variables:
           MCSecret: !Ref JwtTokenSecretMC
+          smsApiFunction: !Sub '${AWS::StackName}-CallSmsApiFunction'
+          smsQueueUrl: !Ref SmsApiQueue
       CodeUri: lambdas/executeEntry/
       Handler: app.lambdaHandler
       Layers:

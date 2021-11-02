@@ -1,6 +1,8 @@
-# testAntoineSamConsol
+# AWS SAM Marketing Cloud Custom Activity
 
-This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
+This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It could also be deployed directly via a CI/CD using Github Actions.
+
+It includes the following files and folders.
 
 - hello-world - Code for the application's Lambda function.
 - events - Invocation events that you can use to invoke the function.
@@ -78,10 +80,12 @@ testAntoineSamConsol$ curl http://localhost:3000/
 
 ![A test image](images/CA_Smart_SMS.png)
 
+<p align="center">
 <img src="images/CA_Smart_SMS.png"
      alt="Markdown Monster icon"
-     style="width: 75%; margin: auto;
+     style="width: 75%; margin: auto; text-align:center; 
      display:block;" />
+</p>
 
 The SAM CLI reads the application template to determine the API's routes and the functions that they invoke. The `Events` property on each function's definition includes the route and method for each path.
 
