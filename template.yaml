@@ -16,22 +16,26 @@ Globals:
       MaximumEventAgeInSeconds: 60
       MaximumRetryAttempts: 2
 Parameters:
-    #PLEASE CHANGE FOR UAT WITH TESTING PARAMETERS!!
     JwtTokenSecretMC:
         Description: 'Marketing Cloud JWT Token'
-        Type: 'AWS::SSM::Parameter::Value<String>'
-        Default: 'JwtTokenSecretMC'
+        Type: 'String'
+        #Type: 'AWS::SSM::Parameter::Value<String>'
+        #Default: 'JwtTokenSecretMC'
     SmsApiGatewayKey:
         Description: 'API SMS Gateway Key'
-        Type: 'AWS::SSM::Parameter::Value<String>'
-        Default: 'SmsApiGatewayKey'
+        Type: 'String'
+        #Type: 'AWS::SSM::Parameter::Value<String>'
+        #Default: 'SmsApiGatewayKey'
     EndpointUrlSMS:
         Description: 'API SMS Gateway Endpoint URL'
         Type: 'String'
+        #Type: 'AWS::SSM::Parameter::Value<String>'
+        #Default: 'EndpointUrlSMS'
     SmsApiConcurrency:
         Description: 'API SMS Gateway Concurrency'
-        Type: 'AWS::SSM::Parameter::Value<String>'
-        Default: 'SmsApiConcurrency'
+        Type: 'String'
+        #Type: 'AWS::SSM::Parameter::Value<String>'
+        #Default: 'SmsApiConcurrency'
 Resources:
   HttpSmsMcApi:
     Type: AWS::Serverless::HttpApi

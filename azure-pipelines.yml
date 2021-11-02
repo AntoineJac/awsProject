@@ -59,7 +59,11 @@ jobs:
           --s3-bucket $(AWS_BUCKET_NAME) \
           --capabilities CAPABILITY_IAM \
           --region $(AWS_REGION) \
-          --parameter-overrides EndpointUrlSMS=$(ENDPOINT_URL_SMS)
+          --parameter-overrides \
+          JwtTokenSecretMC=$(MC_JWT_SECRET) \
+          SmsApiGatewayKey=$(SMS_GATEWAY_KEY) \
+          SmsApiConcurrency=$(SMS_API_CONCURRENCY) \
+          EndpointUrlSMS=$(ENDPOINT_URL_SMS)
     - task: AWSShellScript@1
       displayName: Deploy Public Folder
       inputs:
