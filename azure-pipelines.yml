@@ -32,7 +32,7 @@ jobs:
         npm prune --production
       displayName: 'npm install, lint, and test'
 
-- job: Package
+- job: Package_Deploy
   dependsOn: Build_Test
   steps:
     - task: AWSShellScript@1
@@ -45,10 +45,6 @@ jobs:
         inlineScript: |
           sam build --use-container \
           --template-file template.yaml
-
-- job: Deploy
-  dependsOn: Package
-  steps:
     - task: AWSShellScript@1
       displayName: Deploy Infrastructure
       inputs:
