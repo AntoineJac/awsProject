@@ -8,7 +8,7 @@
   "scripts": {
     "git": "git add . && git add ./dependencies/nodejs/node_modules -f",
     "testSaved": "mocha lambdas/executeEntry/tests/unit lambdas/callSmsApi/tests/unit",
-    "test": "",
+    "test": "echo \"Error: no test specified, used the testSaved scripts\" && exit 1",
     "debug:api": "sam local start-api --debug-port 5000",
     "lambdaExecute": "sam local invoke ExecuteEntryFunction --event events/event_main.json",
     "lambdaPublish": "sam local invoke PublishEntryFunction --event events/event_main.json",
