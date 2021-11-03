@@ -5,9 +5,8 @@ const { expect } = chai;
 let event;
 let context;
 
-describe('Tests index', () => {
+describe('Tests CallSmsApi', () => {
   it('verifies successful response', async () => {
-    /*
     const result = await app.lambdaHandler(event, context);
 
     expect(result).to.be.an('object');
@@ -17,7 +16,6 @@ describe('Tests index', () => {
     const response = JSON.parse(result.body);
 
     expect(response).to.be.an('object');
-    expect(response.message).to.be.equal('hello world');
-    */
+    expect(response.message).to.be.equal('ok');
   });
 });

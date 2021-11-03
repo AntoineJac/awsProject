@@ -127,9 +127,9 @@ For both groups you must create the following variable:
 To build and deploy your application for the first time, run the following in your shell:
 
 ```bash
-sam build
-npm run debug:api
-curl http://localhost:3000/
+test-mc-api$ sam build
+test-mc-api$ npm run debug:api
+test-mc-api$ curl http://localhost:3000/
 ```
 
 The first command will build the source of your application. The second command will emulate your application's API and run the API locally on port 3000.
@@ -141,9 +141,9 @@ Test a single function by invoking it directly with a test event. An event is a 
 Run functions locally and invoke them with the `sam local invoke` command.
 
 ```bash
-npm run lambdaExecute
-npm run lambdaPublish
-npm run lambdaApi
+test-mc-api$ npm run lambdaExecute
+test-mc-api$ npm run lambdaPublish
+test-mc-api$ npm run lambdaApi
 ```
 
 The SAM CLI reads the application template to determine the API's routes and the functions that they invoke. The `Events` property on each function's definition includes the route and method for each path.
@@ -164,8 +164,8 @@ The SAM CLI reads the application template to determine the API's routes and the
 Tests are defined in the `{{function}}/tests` folder in the Lambda folder. Use NPM to install the [Mocha test framework](https://mochajs.org/) and run unit tests. You can run the test for each lambda function or make a general test using:
 
 ```bash
-hello-world$ npm install
-hello-world$ npm run testSaved
+test-mc-api$ npm install
+test-mc-api$ npm run testSaved
 ```
 
 ## Cleanup
@@ -173,7 +173,7 @@ hello-world$ npm run testSaved
 To delete the sample application that you created, use the AWS CLI. Assuming you used your project name for the stack name, you can run the following:
 
 ```bash
-delete-stack --stack-name {{AWS_STACK_NAME}}
+test-mc-api$ delete-stack --stack-name {{AWS_STACK_NAME}}
 ```
 
 ## Installed on Marking Cloud
