@@ -224,6 +224,7 @@ In Journey Builder you will need to drag and drop the activity in the journey an
 Please make sure that your entry data extension is sendable and has the required fiels:
 - mobileNumber: contact mobile number in the format (countryCode) + Number without the +
 - mobileCountryCode: three-letter country codes
+- smartCountryCode: four-letter country codes for Smart SMS only
 - id: unique identifier used for retrieving the data from Denodo
 - attributeData (optional): any additional fields require for personnalization
 

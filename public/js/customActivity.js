@@ -256,9 +256,10 @@ define(['postmonger'], function(Postmonger) {
                 characteristic.forEach((char, index) => {
                     let tempChar = JSON.parse(char);
                     if (!tempChar.value) throw new Error();
-                    if (tempChar.value.search('{{Event.') < 0) {
-                        tempChar.value = `{{Event.${eventDefinitionKey}.${tempChar.value}}}`
-                    }
+                    tempChar.value = tempChar.value.replace(/{{(.*?)}}/gi, function (x) {
+                        if (tempChar.value.search('{{Event.') > -1) return x;
+                        return `{{Event.${eventDefinitionKey}.${x.slice(2,-2).trim()}}}`;
+                    });
                     characteristic[index] = tempChar;
                 });
                 $('#notify').hide();
@@ -326,6 +327,10 @@ define(['postmonger'], function(Postmonger) {
 
     $('#messageContent').keyup(function() {
         messageContent = getContentValue();
+        messageContent = messageContent.replaceAll(/{{(.*?)}}/gi, function (x) {
+            if (x.search('{{Event.') > -1) return x;
+            return `{{Event.${eventDefinitionKey}.${x.slice(2,-2).trim()}}}`;
+        });
         updateNextButton(isStepOneValid());
     });
 
@@ -352,7 +357,6 @@ define(['postmonger'], function(Postmonger) {
         messageObject = {};
         messageObject['id'] = `{{Event.${eventDefinitionKey}.id}}`;
         messageObject['mobileNumber'] = `{{Event.${eventDefinitionKey}.mobileNumber}}`;
-        messageObject['mobileCountryCode'] = `{{Event.${eventDefinitionKey}.mobileCountryCode}}`;
         messageObject['ContactKey'] = '{{Contact.Key}}';
         messageObject['messageContent'] = messageContent;
         messageObject['senderName'] = senderName;
@@ -360,7 +364,7 @@ define(['postmonger'], function(Postmonger) {
         messageObject['isSensitive'] = isSensitive;
 
         if (messageChannel == 'S2MS') {
-            messageObject['mobileCountryCode'] = 'ZAF4';
+            messageObject['mobileCountryCode'] = `{{Event.${eventDefinitionKey}.smartCountryCode}}`;
             messageObject['messageChannel'] = 'S2MS';
             messageObject['messageTemplate'] = messageTemplate;
             messageObject['characteristic'] = characteristic;
