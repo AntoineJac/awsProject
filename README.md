@@ -178,6 +178,8 @@ delete-stack --stack-name {{AWS_STACK_NAME}}
 
 ## Installed on Marking Cloud
 
+Please first replace the {{API_ENDPOINT}} in the config.js file with the API Gateway HttpApi endpoint.
+
 You will need to retrieve the url from your public bucket containg the public folder files. You can also use a private access buckets by adding a Bucket policy and making sure Marketing Cloud IP ranges are whitelisted (https://help.salesforce.com/s/articleView?id=sf.mc_es_ip_addresses_for_inclusion.htm&type=5):
 
 ```

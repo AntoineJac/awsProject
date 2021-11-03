@@ -1,8 +1,8 @@
 env:
-  AWS_STACK_NAME: MC-CA-API
-  S3_BUCKET_NAME: testsiteantoine
-  S3_BUCKET_NAME_PUBLIC: 	testsiteantoineform
-  AWS_REGION: af-south-1
+  AWS_STACK_NAME: ${{ secrets.AWS_STACK_NAME }}
+  AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
+  AWS_BUCKET_NAME_PUBLIC: ${{ secrets.AWS_BUCKET_NAME_PUBLIC }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
   AWS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   MC_JWT_SECRET: ${{ secrets.MC_JWT_SECRET }}
@@ -40,7 +40,7 @@ jobs:
 # sam deploy
       - run: |
           sam deploy --force-upload --no-confirm-changeset --no-fail-on-empty-changeset \
-          --stack-name ${{ env.AWS_STACK_NAME }} --s3-bucket ${{ env.S3_BUCKET_NAME }} \
+          --stack-name ${{ env.AWS_STACK_NAME }} --s3-bucket ${{ env.AWS_BUCKET_NAME }} \
           --capabilities CAPABILITY_IAM --region ${{ env.AWS_REGION }} \
           --parameter-overrides \
           JwtTokenSecretMC=${{ env.MC_JWT_SECRET }} \
@@ -49,5 +49,5 @@ jobs:
           EndpointUrlSMS=${{ env.ENDPOINT_URL_SMS }}
 
       - run:  |
-          aws s3 sync ./public s3://${{ env.S3_BUCKET_NAME_PUBLIC }} --region ${{ env.AWS_REGION }} \
+          aws s3 sync ./public s3://${{ env.AWS_BUCKET_NAME_PUBLIC }} --region ${{ env.AWS_REGION }} \
           --acl public-read --size-only
