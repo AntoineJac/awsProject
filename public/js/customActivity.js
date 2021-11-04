@@ -105,8 +105,10 @@ define(['postmonger'], function(Postmonger) {
             priority = args.priority;
             isSensitive = args.isSensitive;
             messageTemplate = args.messageTemplate;
-            characteristic = JSON.stringify(args.characteristic).slice(1,-1);
-            searchIndexes = JSON.stringify(args.searchIndexes).slice(1,-1);
+            characteristic = JSON.stringify(args.characteristic);
+            if (characteristic) characteristic = characteristic.slice(1,-1);
+            searchIndexes = JSON.stringify(args.searchIndexes);
+            if (searchIndexes) searchIndexes = searchIndexes.slice(1,-1);
 
             $('#messageContent').val(messageContent);
             $('#messageChannel').val(messageChannel);
@@ -248,7 +250,7 @@ define(['postmonger'], function(Postmonger) {
 
     function prepareCharacteristic() {
         characteristic = getCharacteristicValue();
-        characteristic = characteristic.replace(/\s/g,'').replace('},{','}},{{');
+        characteristic = characteristic.replaceAll(/\s/g,'').replaceAll('},{','}},{{');
         characteristic = characteristic.split('},{');
 
         if (characteristic[0]) {
@@ -281,7 +283,7 @@ define(['postmonger'], function(Postmonger) {
 
     function prepareSearchIndexes() {
         searchIndexes = getSearchIndexesValue();
-        searchIndexes = searchIndexes.replace(/\s/g,'').replace('},{','}},{{');
+        searchIndexes = searchIndexes.replaceAll(/\s/g,'').replaceAll('},{','}},{{');
         searchIndexes = searchIndexes.split('},{');
 
         if (searchIndexes[0]) {
