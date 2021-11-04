@@ -228,6 +228,7 @@ Please make sure that your entry data extension is sendable and has the required
 - id: unique identifier used for retrieving the data from Denodo
 - attributeData (optional): any additional fields require for personnalization
 
+To add any attributeData from the Data Extension into the content or characteristc (value) fields, please use the format {{AttributName}}. It will be automatically replaced in the payload during the Execute request. 
 
 **Standard SMS:**
 
