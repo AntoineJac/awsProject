@@ -17,7 +17,7 @@
         "execute": {
             "inArguments": [],
             "outArguments": [],
-            "url": "{{API_ENDPOINT}}/execute",
+            "url": "https://5zg9paio15.execute-api.af-south-1.amazonaws.com/execute",
             "verb": "POST",
             "format": "json",
             "useJwt": true,
@@ -29,22 +29,22 @@
     },
     "configurationArguments": {
         "save": {
-            "url": "{{API_ENDPOINT}}/save",
+            "url": "https://5zg9paio15.execute-api.af-south-1.amazonaws.com/save",
             "verb": "POST",
             "useJwt": true
         },
         "publish": {
-            "url": "{{API_ENDPOINT}}/publish",
+            "url": "https://5zg9paio15.execute-api.af-south-1.amazonaws.com/publish",
             "verb": "POST",
             "useJwt": true
         },
         "stop": {
-            "url": "{{API_ENDPOINT}}/stop",
+            "url": "https://5zg9paio15.execute-api.af-south-1.amazonaws.com/stop",
             "verb": "POST",
             "useJwt": true
         },
         "validate": {
-            "url": "{{API_ENDPOINT}}/validate",
+            "url": "https://5zg9paio15.execute-api.af-south-1.amazonaws.com/validate",
             "verb": "POST",
             "useJwt": true
         }

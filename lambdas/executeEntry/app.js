@@ -10,6 +10,10 @@ const sqs = new AWS.SQS();
 const returnPayloadSms = (decoded) => {
   if (decoded && decoded.inArguments && decoded.inArguments.length > 0) {
     const decodedArgs = decoded.inArguments[0];
+    const epochTime = Date.now();
+    if (decodedArgs.id) {
+      decodedArgs.id = decodedArgs.id + '_' + epochTime;
+    }
     if (!decodedArgs.ContactKey) {
       decodedArgs.ContactKey = decoded.keyValue;
     }

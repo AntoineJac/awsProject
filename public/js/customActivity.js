@@ -16,6 +16,8 @@ define(['postmonger'], function(Postmonger) {
     ];
     let currentStep = steps[0].key;
     let eventDefinitionKey;
+    let journeyName = '';
+    let nodeName = '';
     let messageObject = {};
     let payload = {};
     let messageContent = '';
@@ -89,6 +91,7 @@ define(['postmonger'], function(Postmonger) {
     //retrieves the existing configuration of the CA on initialization
     function init(data) {
         payload = data;
+        nodeName = payload.name.replace(/\s+/g,"-");
 
         let hasInArguments = Boolean(
             payload['arguments'] &&
@@ -130,6 +133,7 @@ define(['postmonger'], function(Postmonger) {
     //retrieves the dataExtensionKey and eventDefinitionKey on initialization 
     function onRequestedTriggerEventDefinition(eventDefinitionModel) {
         if (eventDefinitionModel) {
+            journeyName = eventDefinitionModel.name.replace(/\s+/g,"-");
             if (eventDefinitionModel.dataExtensionId) {
                 eventDefinitionKey = eventDefinitionModel.eventDefinitionKey;
             } else {
@@ -357,7 +361,8 @@ define(['postmonger'], function(Postmonger) {
     /**STEP 2 RELATED FUNCTIONS**/
     function setReviewPageVariables() {
         messageObject = {};
-        messageObject['id'] = `{{Event.${eventDefinitionKey}.id}}`;
+        //messageObject['id'] = `{{Event.${eventDefinitionKey}.id}}`;
+        messageObject['id'] = journeyName + '_' + nodeName + '_' + '{{Contact.Key}}';
         messageObject['mobileNumber'] = `{{Event.${eventDefinitionKey}.mobileNumber}}`;
         messageObject['ContactKey'] = '{{Contact.Key}}';
         messageObject['messageContent'] = messageContent;

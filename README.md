@@ -23,7 +23,7 @@ The application uses several AWS resources, including Lambda functions, SQS Queu
 
 See the following diagram of the application AWS infrastructure  :
 
-![A test image](images/AWS_Infrastructure.png)
+![AWS_Infrastructure](images/AWS_Infrastructure.png)
 
 It includes the following ressources and folders.
 
@@ -90,12 +90,12 @@ Github Actions:
 
 If using Github action, you will need to create the variables under Settings and Secrets:
 
-![A test image](images/Github_Actions.png)
+![Github_Actions](images/Github_Actions.png)
 
 
 Azure Pipelines:
 
-![A test image](images/Azure_CICD.png)
+![Azure_CICD](images/Azure_CICD.png)
 
 If using Azure Pipelines, you will need to clone the repository, create the Pipelines and set up 2 variable groups in Library:
 * **mc-custom-activity-prod-env-variable-group**: containing your production variables
@@ -115,12 +115,7 @@ For both groups you must create the following variable:
 * **SMS_GATEWAY_KEY**: The SMS Gateway secret used to make SMS api called.
 * **SMS_API_CONCURRENCY**: The maximum concurrency used to send request to the SMS Gateway.
 
-<p align="center">
-<img src="images/Azure_Variables.png"
-     alt="Markdown icon"
-     style="width: 75%; margin: auto; text-align:center; 
-     display:block;" />
-</p>
+![Azure_Variables](images/Azure_Variables.png)
 
 ## Test the application locally
 
@@ -209,12 +204,7 @@ You will need to retrieve the url from your public bucket containg the public fo
 To install the Custom Activity, please go to Setup, Install Packages and create or edit a new Package.
 Click `add a component` and select `Journey Builder Activity`. Enter a name, description, category and the  url from your public bucket where the files of the public folder are hosted.
 
-<p align="center">
-<img src="images/Install_Package.png"
-     alt="Markdown icon"
-     style="width: 75%; margin: auto; text-align:center; 
-     display:block;" />
-</p>
+![Install_Package](images/Install_Package.png)
 
 
 ## Setup on Journey Builder
@@ -234,12 +224,7 @@ To add any attributeData from the Data Extension into the content or characteris
 
 Enter your SMS Content, Priority, IsSensitive and Sender Name information:
 
-<p align="center">
-<img src="images/SMS_UI.png"
-     alt="Markdown icon"
-     style="width: 75%; margin: auto; text-align:center; 
-     display:block;" />
-</p>
+![SMS_UI](images/SMS_UI.png)
 
 
 **Smart SMS:**
@@ -249,23 +234,14 @@ A few additional parameters are available:
 - Characteristic: values must be the data extension fields name
 - SearchIndexes
 
-<p align="center">
-<img src="images/SmartSMS_UI.png"
-     alt="Markdown icon"
-     style="width: 75%; margin: auto; text-align:center; 
-     display:block;" />
-</p>
+![SmartSMS_UI](images/SmartSMS_UI.png)
+
 
 **Prewiew:**
 
 You could notice that Characteristic values have been automatically replaced with the correct Data Binding format
 
-<p align="center">
-<img src="images/SMS_Preview.png"
-     alt="Markdown icon"
-     style="width: 75%; margin: auto; text-align:center; 
-     display:block;" />
-</p>
+![SMS_Preview](images/SMS_Preview.png)
 
 
 Please click done and activiate your journey. You should receive the SMS after a few minutes.
