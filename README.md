@@ -215,7 +215,7 @@ Please make sure that your entry data extension is sendable and has the required
 - mobileNumber: contact mobile number in the format (countryCode) + Number without the +
 - mobileCountryCode: three-letter country codes
 - smartCountryCode: four-letter country codes for Smart SMS only
-- id: unique identifier used for retrieving the data from Denodo
+- id (optional): unique identifier used for retrieving the data from Denodo. If not provided it will be passed by default as "journeyName_ActivityName_ContactKey_SentDateEpochTime"
 - attributeData (optional): any additional fields require for personnalization
 
 To add any attributeData from the Data Extension into the content or characteristc (value) fields, please use the format {{AttributName}}. It will be automatically replaced in the payload during the Execute request. 
