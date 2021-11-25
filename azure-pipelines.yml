@@ -38,7 +38,7 @@ jobs:
     - task: AWSShellScript@1
       displayName: Package
       inputs:
-        awsCredentials: AwsServiceConnection
+        awsCredentials: $(AWS_SERVICE_CONNECTION_NAME)
         regionName: $(AWS_REGION)
         scriptType: 'inline'
         disableAutoCwd: true
@@ -47,7 +47,7 @@ jobs:
     - task: AWSShellScript@1
       displayName: Deploy Infrastructure
       inputs:
-        awsCredentials: AwsServiceConnection
+        awsCredentials: $(AWS_SERVICE_CONNECTION_NAME)
         regionName: $(AWS_REGION)
         scriptType: "inline"
         inlineScript: |
@@ -71,7 +71,7 @@ jobs:
     - task: AWSShellScript@1
       displayName: Deploy Public Folder
       inputs:
-        awsCredentials: AwsServiceConnection
+        awsCredentials: $(AWS_SERVICE_CONNECTION_NAME)
         regionName: $(AWS_REGION)
         scriptType: "inline"
         inlineScript: |
