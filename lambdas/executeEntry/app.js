@@ -12,7 +12,7 @@ const returnPayloadSms = (decoded) => {
     const decodedArgs = decoded.inArguments[0];
     const epochTime = Date.now();
     if (decodedArgs.id) {
-      decodedArgs.id = decodedArgs.id + '_' + epochTime;
+      decodedArgs.id = `${decodedArgs.id}_${epochTime}`;
     }
     if (!decodedArgs.ContactKey) {
       decodedArgs.ContactKey = decoded.keyValue;

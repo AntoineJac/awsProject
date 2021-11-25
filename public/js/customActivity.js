@@ -1,412 +1,409 @@
-define(['postmonger'], function(Postmonger) {
-    'use strict';
+define(['postmonger'], (Postmonger) => {
+  /* DEPENDENCIES AND DECLARATION */
+  const connection = new Postmonger.Session();
+  const steps = [{
+    label: 'Select Fields',
+    key: 'step1',
+    active: true,
+  },
+  {
+    label: 'Preview & Confirm',
+    key: 'step2',
+    active: false,
+  },
+  ];
+  let currentStep = steps[0].key;
+  let eventDefinitionKey;
+  let journeyName = '';
+  let nodeName = '';
+  let messageObject = {};
+  let payload = {};
+  let messageContent = '';
+  let messageChannel = '';
+  let senderName = '';
+  let priority = '';
+  let isSensitive = '';
+  let messageTemplate = '';
+  let characteristic = [];
+  let searchIndexes = [];
 
-    /* DEPENDENCIES AND DECLARATION */
-    let connection = new Postmonger.Session();
-    let steps = [{
-            label: 'Select Fields',
-            key: 'step1',
-            active: true
-        },
-        {
-            label: 'Preview & Confirm',
-            key: 'step2',
-            active: false
-        },
-    ];
-    let currentStep = steps[0].key;
-    let eventDefinitionKey;
-    let journeyName = '';
-    let nodeName = '';
-    let messageObject = {};
-    let payload = {};
-    let messageContent = '';
-    let messageChannel = '';
-    let senderName = '';
-    let priority = '';
-    let isSensitive = '';
-    let messageTemplate = '';
-    let characteristic = [];
-    let searchIndexes = [];
-
-    const templateSMS = {
+  const templateSMS = {
+    id: '',
+    content: '',
+    isSensitive: '',
+    description: 'Message Sent by Custom Activity in Journey Builder',
+    countryCode: '',
+    messageType: '',
+    template: '',
+    characteristic: [],
+    searchIndexes: [],
+    priority: '',
+    receiver: [
+      {
         id: '',
-        content: '',
-        isSensitive: '',
-        description: 'Message Sent by Custom Activity in Journey Builder',
-        countryCode: '',
-        messageType: '',
-        template: '',
-        characteristic: [],
-        searchIndexes: [],
-        priority: '',
-        receiver: [
-          {
-            id: '',
-            name: 'ContactKey',
-            phoneNumber: '',
-            party: {
-              id: '',
-              role: 'Customer',
-              name: 'ContactKey',
-              '@referredType': 'Individual',
-            },
-          },
-        ],
-        sender: {
-          id: 'JourneyBuilderCustomActivity',
-          name: 'MarketingCloud',
-          phoneNumber: '919743464658',
-          party: {
-            id: 'JourneyBuilderCustomActivity',
-            role: 'SmsApiGateway',
-            name: '',
-            '@referredType': 'externalSystem',
-          },
+        name: 'ContactKey',
+        phoneNumber: '',
+        party: {
+          id: '',
+          role: 'Customer',
+          name: 'ContactKey',
+          '@referredType': 'Individual',
         },
-    };
+      },
+    ],
+    sender: {
+      id: 'JourneyBuilderCustomActivity',
+      name: 'MarketingCloud',
+      phoneNumber: '919743464658',
+      party: {
+        id: 'JourneyBuilderCustomActivity',
+        role: 'SmsApiGateway',
+        name: '',
+        '@referredType': 'externalSystem',
+      },
+    },
+  };
 
-    /* INITIALIZATION */
-    $(window).ready(onRender);
+  /* INITIALIZATION */
+  $(window).ready(onRender);
 
-    // Postmonger events from SFMC
-    connection.on('initActivity', init);
-    connection.on('clickedNext', onClickedNext);
-    connection.on('clickedBack', onClickedBack);
-    connection.on('gotoStep', onGotoStep);
-    connection.on('requestedTriggerEventDefinition', onRequestedTriggerEventDefinition);
+  // Postmonger events from SFMC
+  connection.on('initActivity', init);
+  connection.on('clickedNext', onClickedNext);
+  connection.on('clickedBack', onClickedBack);
+  connection.on('gotoStep', onGotoStep);
+  connection.on('requestedTriggerEventDefinition', onRequestedTriggerEventDefinition);
 
-    function onRender() {
-        // JB will respond the first time 'ready' is called with 'initActivity'
-        connection.trigger('ready');
-        connection.trigger('updateButton', {
-            button: 'next',
-            enabled: false
-        });
-        connection.trigger('requestTriggerEventDefinition');
-        $('#spinner').hide();
+  function onRender() {
+    // JB will respond the first time 'ready' is called with 'initActivity'
+    connection.trigger('ready');
+    connection.trigger('updateButton', {
+      button: 'next',
+      enabled: false,
+    });
+    connection.trigger('requestTriggerEventDefinition');
+    $('#spinner').hide();
+  }
+
+  // retrieves the existing configuration of the CA on initialization
+  // retrieves the existing configuration of the CA on initialization
+  function init(data) {
+    payload = data;
+    nodeName = payload.name.replace(/\s+/g, '-');
+
+    const hasInArguments = Boolean(
+      payload.arguments
+            && payload.arguments.execute
+            && payload.arguments.execute.inArguments
+            && payload.arguments.execute.inArguments.length > 0,
+    );
+
+    if (hasInArguments) {
+      const args = data.arguments.execute.inArguments[0];
+      messageContent = args.messageContent;
+      messageChannel = args.messageChannel;
+      senderName = args.senderName;
+      priority = args.priority;
+      isSensitive = args.isSensitive;
+      messageTemplate = args.messageTemplate;
+      characteristic = JSON.stringify(args.characteristic);
+      if (characteristic) characteristic = characteristic.slice(1, -1);
+      searchIndexes = JSON.stringify(args.searchIndexes);
+      if (searchIndexes) searchIndexes = searchIndexes.slice(1, -1);
+
+      $('#messageContent').val(messageContent);
+      $('#messageChannel').val(messageChannel);
+      $('#senderName').val(senderName);
+      $('#priority').val(priority);
+      $('#isSensitive').val(isSensitive);
+      $('#messageTemplate').val(messageTemplate);
+      $('#characteristic').val(characteristic);
+      $('#searchIndexes').val(searchIndexes);
+
+      messageChannel == 'S2MS'
+        ? $('#smart_template_fields').show()
+        : $('#smart_template_fields').hide();
+
+      updateNextButton(isStepOneValid());
     }
+  }
 
-    //retrieves the existing configuration of the CA on initialization
-    //retrieves the existing configuration of the CA on initialization
-    function init(data) {
-        payload = data;
-        nodeName = payload.name.replace(/\s+/g,"-");
-
-        let hasInArguments = Boolean(
-            payload['arguments'] &&
-            payload['arguments'].execute &&
-            payload['arguments'].execute.inArguments &&
-            payload['arguments'].execute.inArguments.length > 0
+  // retrieves the dataExtensionKey and eventDefinitionKey on initialization
+  function onRequestedTriggerEventDefinition(eventDefinitionModel) {
+    if (eventDefinitionModel) {
+      journeyName = eventDefinitionModel.name.replace(/\s+/g, '-');
+      if (eventDefinitionModel.dataExtensionId) {
+        eventDefinitionKey = eventDefinitionModel.eventDefinitionKey;
+      } else {
+        $('#notify').addClass('notifyActive');
+        $('#notify').show();
+        $('#notify').text(
+          'There is no entry source configured for this journey, please select an entry data extension',
         );
+      }
+    }
+  }
 
-        if (hasInArguments) {
-            let args = data['arguments'].execute.inArguments[0];
-            messageContent = args.messageContent;
-            messageChannel = args.messageChannel;
-            senderName = args.senderName;
-            priority = args.priority;
-            isSensitive = args.isSensitive;
-            messageTemplate = args.messageTemplate;
-            characteristic = JSON.stringify(args.characteristic);
-            if (characteristic) characteristic = characteristic.slice(1,-1);
-            searchIndexes = JSON.stringify(args.searchIndexes);
-            if (searchIndexes) searchIndexes = searchIndexes.slice(1,-1);
+  /** CONTROLS RELATED* */
 
-            $('#messageContent').val(messageContent);
-            $('#messageChannel').val(messageChannel);
-            $('#senderName').val(senderName);
-            $('#priority').val(priority);
-            $('#isSensitive').val(isSensitive);
-            $('#messageTemplate').val(messageTemplate);
-            $('#characteristic').val(characteristic);
-            $('#searchIndexes').val(searchIndexes);
+  // calls the functions that are needed for the next step of the custom activity
+  function onClickedNext() {
+    $('#notify').hide();
 
-            messageChannel == 'S2MS' ?
-            $('#smart_template_fields').show() :
-            $('#smart_template_fields').hide();
-             
-            updateNextButton(isStepOneValid());
-        }
+    if (currentStep.key === 'step1') {
+      setReviewPageVariables();
+      connection.trigger('nextStep');
+    } else if (currentStep.key === 'step2') {
+      updateNextButton(false);
+      onActivityComplete();
+    } else {
+      connection.trigger('nextStep');
+    }
+  }
+
+  function onClickedBack() {
+    connection.trigger('prevStep');
+  }
+
+  function onGotoStep(step) {
+    showStep(step);
+    connection.trigger('ready');
+  }
+
+  function showStep(step, stepIndex) {
+    if (stepIndex && !step) {
+      step = steps[stepIndex - 1];
     }
 
-    //retrieves the dataExtensionKey and eventDefinitionKey on initialization 
-    function onRequestedTriggerEventDefinition(eventDefinitionModel) {
-        if (eventDefinitionModel) {
-            journeyName = eventDefinitionModel.name.replace(/\s+/g,"-");
-            if (eventDefinitionModel.dataExtensionId) {
-                eventDefinitionKey = eventDefinitionModel.eventDefinitionKey;
-            } else {
-                $('#notify').addClass('notifyActive');
-                $('#notify').show();
-                $('#notify').text(
-                    'There is no entry source configured for this journey, please select an entry data extension'
-                );
-            }
-        }
-    };
+    currentStep = step;
 
-    /**CONTROLS RELATED**/
+    $('.step').hide();
+    $(`#${currentStep.key}`).show();
+  }
 
-    //calls the functions that are needed for the next step of the custom activity
-    function onClickedNext() {
-        $('#notify').hide();
+  function updateNextButton(enabled) {
+    connection.trigger('updateButton', {
+      button: 'next',
+      enabled,
+    });
+  }
 
-        if (currentStep.key === 'step1') {
-            setReviewPageVariables();
-            connection.trigger('nextStep');
-        } else if (currentStep.key === 'step2') {
-            updateNextButton(false);
-            onActivityComplete();
-        } else {
-            connection.trigger('nextStep');
-        }
-    }
+  function isValidValue(value) {
+    return $.trim(value).length > 0;
+  }
 
-    function onClickedBack() {
-        connection.trigger('prevStep');
-    }
+  /** STEP 1 RELATED FUNCTIONS* */
 
-    function onGotoStep(step) {
-        showStep(step);
-        connection.trigger('ready');
-    }
-
-    function showStep(step, stepIndex) {
-        if (stepIndex && !step) {
-            step = steps[stepIndex - 1];
-        }
-
-        currentStep = step;
-
-        $('.step').hide();
-        $('#' + currentStep.key).show();
-    }
-
-    function updateNextButton(enabled) {
-        connection.trigger('updateButton', {
-            button: 'next',
-            enabled: enabled
-        });
-    }
-
-    function isValidValue(value) {
-        return $.trim(value).length > 0;
-    }
-
-    /**STEP 1 RELATED FUNCTIONS**/
-
-    function isStepOneValid() {
-        return (
-            isValidValue(messageContent) && isValidValue(messageChannel) && isValidValue(senderName)
+  function isStepOneValid() {
+    return (
+      isValidValue(messageContent) && isValidValue(messageChannel) && isValidValue(senderName)
                 && isValidValue(priority) && isValidValue(isSensitive)
                 && prepareCharacteristic() && prepareSearchIndexes()
-        );
-    }
+    );
+  }
 
-    function getChannelValue() {
-        return $('#messageChannel option:selected')
-            .val()
-            .trim();
-    }
+  function getChannelValue() {
+    return $('#messageChannel option:selected')
+      .val()
+      .trim();
+  }
 
-    function getPriorityValue() {
-        return $('#priority option:selected')
-            .val()
-            .trim();
-    }
+  function getPriorityValue() {
+    return $('#priority option:selected')
+      .val()
+      .trim();
+  }
 
-    function getIsSensitiveValue() {
-        return $('#isSensitive option:selected')
-            .val()
-            .trim();
-    }
+  function getIsSensitiveValue() {
+    return $('#isSensitive option:selected')
+      .val()
+      .trim();
+  }
 
-    function getContentValue() {
-        return $('#messageContent')
-            .val()
-            .trim();
-    }
+  function getContentValue() {
+    return $('#messageContent')
+      .val()
+      .trim();
+  }
 
-    function getSenderNameValue() {
-        return $('#senderName')
-            .val()
-            .trim();
-    }
+  function getSenderNameValue() {
+    return $('#senderName')
+      .val()
+      .trim();
+  }
 
-    function getTemplateValue() {
-        return $('#messageTemplate')
-            .val()
-            .trim();
-    }
+  function getTemplateValue() {
+    return $('#messageTemplate')
+      .val()
+      .trim();
+  }
 
-    function getCharacteristicValue() {
-        return $('#characteristic')
-            .val()
-            .trim();
-    }
+  function getCharacteristicValue() {
+    return $('#characteristic')
+      .val()
+      .trim();
+  }
 
-    function getSearchIndexesValue() {
-        return $('#searchIndexes')
-            .val()
-            .trim();
-    }
+  function getSearchIndexesValue() {
+    return $('#searchIndexes')
+      .val()
+      .trim();
+  }
 
-    function prepareCharacteristic() {
-        characteristic = getCharacteristicValue();
-        characteristic = characteristic.replaceAll(/\s/g,'').replaceAll('},{','}},{{');
-        characteristic = characteristic.split('},{');
+  function prepareCharacteristic() {
+    characteristic = getCharacteristicValue();
+    characteristic = characteristic.replaceAll(/\s/g, '').replaceAll('},{', '}},{{');
+    characteristic = characteristic.split('},{');
 
-        if (characteristic[0]) {
-            try {
-                characteristic.forEach((char, index) => {
-                    let tempChar = JSON.parse(char);
-                    if (!tempChar.value) throw new Error();
-                    tempChar.value = tempChar.value.replace(/{{(.*?)}}/gi, function (x) {
-                        if (tempChar.value.search('{{Event.') > -1) return x;
-                        return `{{Event.${eventDefinitionKey}.${x.slice(2,-2).trim()}}}`;
-                    });
-                    characteristic[index] = tempChar;
-                });
-                $('#notify').hide();
-                return true;
-            } catch (err) {
-                $('#notify').addClass('notifyActive');
-                $('#notify').show();
-                $('#notify').text(
-                    'There is an error with your characteristic object, please fix to continue'
-                );
-                return false;
-            }
-        } else {
-            characteristic = [];
-            $('#notify').hide();
-            return true;
-        }
-    }
-
-    function prepareSearchIndexes() {
-        searchIndexes = getSearchIndexesValue();
-        searchIndexes = searchIndexes.replaceAll(/\s/g,'').replaceAll('},{','}},{{');
-        searchIndexes = searchIndexes.split('},{');
-
-        if (searchIndexes[0]) {
-            try {
-                searchIndexes.forEach((char, index) => {
-                    let tempChar = JSON.parse(char);
-                    searchIndexes[index] = tempChar;
-                });
-                $('#notify').hide();
-                return true;
-            } catch (err) {
-                $('#notify').addClass('notifyActive');
-                $('#notify').show();
-                $('#notify').text(
-                    'There is an error with your searchIndexes object, please fix to continue'
-                );
-                return false;
-            }
-        } else {
-            searchIndexes = [];
-            $('#notify').hide();
-            return true;
-        }
-    }
-
-    $('#messageChannel').change(function() {
-        messageChannel = getChannelValue();
-        messageChannel == 'S2MS' ?
-            $('#smart_template_fields').show() :
-            $('#smart_template_fields').hide();
-        updateNextButton(isStepOneValid());
-    });
-
-    $('#priority').change(function() {
-        priority = getPriorityValue();
-        updateNextButton(isStepOneValid());
-    });
-
-    $('#isSensitive').change(function() {
-        isSensitive = getIsSensitiveValue();
-        updateNextButton(isStepOneValid());
-    });
-
-    $('#messageContent').keyup(function() {
-        messageContent = getContentValue();
-        messageContent = messageContent.replaceAll(/{{(.*?)}}/gi, function (x) {
-            if (x.search('{{Event.') > -1) return x;
-            return `{{Event.${eventDefinitionKey}.${x.slice(2,-2).trim()}}}`;
+    if (characteristic[0]) {
+      try {
+        characteristic.forEach((char, index) => {
+          const tempChar = JSON.parse(char);
+          if (!tempChar.value) throw new Error();
+          tempChar.value = tempChar.value.replace(/{{(.*?)}}/gi, (x) => {
+            if (tempChar.value.search('{{Event.') > -1) return x;
+            return `{{Event.${eventDefinitionKey}.${x.slice(2, -2).trim()}}}`;
+          });
+          characteristic[index] = tempChar;
         });
-        updateNextButton(isStepOneValid());
+        $('#notify').hide();
+        return true;
+      } catch (err) {
+        $('#notify').addClass('notifyActive');
+        $('#notify').show();
+        $('#notify').text(
+          'There is an error with your characteristic object, please fix to continue',
+        );
+        return false;
+      }
+    } else {
+      characteristic = [];
+      $('#notify').hide();
+      return true;
+    }
+  }
+
+  function prepareSearchIndexes() {
+    searchIndexes = getSearchIndexesValue();
+    searchIndexes = searchIndexes.replaceAll(/\s/g, '').replaceAll('},{', '}},{{');
+    searchIndexes = searchIndexes.split('},{');
+
+    if (searchIndexes[0]) {
+      try {
+        searchIndexes.forEach((char, index) => {
+          const tempChar = JSON.parse(char);
+          searchIndexes[index] = tempChar;
+        });
+        $('#notify').hide();
+        return true;
+      } catch (err) {
+        $('#notify').addClass('notifyActive');
+        $('#notify').show();
+        $('#notify').text(
+          'There is an error with your searchIndexes object, please fix to continue',
+        );
+        return false;
+      }
+    } else {
+      searchIndexes = [];
+      $('#notify').hide();
+      return true;
+    }
+  }
+
+  $('#messageChannel').change(() => {
+    messageChannel = getChannelValue();
+    messageChannel == 'S2MS'
+      ? $('#smart_template_fields').show()
+      : $('#smart_template_fields').hide();
+    updateNextButton(isStepOneValid());
+  });
+
+  $('#priority').change(() => {
+    priority = getPriorityValue();
+    updateNextButton(isStepOneValid());
+  });
+
+  $('#isSensitive').change(() => {
+    isSensitive = getIsSensitiveValue();
+    updateNextButton(isStepOneValid());
+  });
+
+  $('#messageContent').keyup(() => {
+    messageContent = getContentValue();
+    messageContent = messageContent.replaceAll(/{{(.*?)}}/gi, (x) => {
+      if (x.search('{{Event.') > -1) return x;
+      return `{{Event.${eventDefinitionKey}.${x.slice(2, -2).trim()}}}`;
     });
+    updateNextButton(isStepOneValid());
+  });
 
-    $('#senderName').keyup(function() {
-        senderName = getSenderNameValue();
-        updateNextButton(isStepOneValid());
-    });
+  $('#senderName').keyup(() => {
+    senderName = getSenderNameValue();
+    updateNextButton(isStepOneValid());
+  });
 
-    $('#messageTemplate').keyup(function() {
-        messageTemplate = getTemplateValue();
-        updateNextButton(isStepOneValid());
-    });
+  $('#messageTemplate').keyup(() => {
+    messageTemplate = getTemplateValue();
+    updateNextButton(isStepOneValid());
+  });
 
-    $('#characteristic').keyup(function() {
-        updateNextButton(isStepOneValid());
-    });
+  $('#characteristic').keyup(() => {
+    updateNextButton(isStepOneValid());
+  });
 
-    $('#searchIndexes').keyup(function() {
-        updateNextButton(isStepOneValid());
-    });
+  $('#searchIndexes').keyup(() => {
+    updateNextButton(isStepOneValid());
+  });
 
-    /**STEP 2 RELATED FUNCTIONS**/
-    function setReviewPageVariables() {
-        messageObject = {};
-        //messageObject['id'] = `{{Event.${eventDefinitionKey}.id}}`;
-        messageObject['id'] = journeyName + '_' + nodeName + '_' + '{{Contact.Key}}';
-        messageObject['mobileNumber'] = `{{Event.${eventDefinitionKey}.mobileNumber}}`;
-        messageObject['ContactKey'] = '{{Contact.Key}}';
-        messageObject['messageContent'] = messageContent;
-        messageObject['senderName'] = senderName;
-        messageObject['priority'] = priority;
-        messageObject['isSensitive'] = isSensitive;
+  /** STEP 2 RELATED FUNCTIONS* */
+  function setReviewPageVariables() {
+    messageObject = {};
+    // messageObject['id'] = `{{Event.${eventDefinitionKey}.id}}`;
+    messageObject.id = `${journeyName}_${nodeName}_` + '{{Contact.Key}}';
+    messageObject.mobileNumber = `{{Event.${eventDefinitionKey}.mobileNumber}}`;
+    messageObject.ContactKey = '{{Contact.Key}}';
+    messageObject.messageContent = messageContent;
+    messageObject.senderName = senderName;
+    messageObject.priority = priority;
+    messageObject.isSensitive = isSensitive;
 
-        if (messageChannel == 'S2MS') {
-            messageObject['mobileCountryCode'] = `{{Event.${eventDefinitionKey}.smartCountryCode}}`;
-            messageObject['messageChannel'] = 'S2MS';
-            messageObject['messageTemplate'] = messageTemplate;
-            messageObject['characteristic'] = characteristic;
-            messageObject['searchIndexes'] = searchIndexes;
-        } else {
-            messageObject['messageChannel'] = messageChannel;
-            messageObject['mobileCountryCode'] = `{{Event.${eventDefinitionKey}.mobileCountryCode}}`;
-        }
-
-        templateSMS.id = messageObject.id;
-        templateSMS.content = messageObject.messageContent;
-        templateSMS.countryCode = messageObject.mobileCountryCode;
-        templateSMS.messageType = messageObject.messageChannel;
-        templateSMS.priority = messageObject.priority;
-        templateSMS.isSensitive = messageObject.isSensitive;
-        templateSMS.template = messageObject.messageTemplate;
-        templateSMS.characteristic = messageObject.characteristic;
-        templateSMS.searchIndexes = messageObject.searchIndexes;
-        templateSMS.receiver[0].id = messageObject.ContactKey;
-        templateSMS.receiver[0].phoneNumber = messageObject.mobileNumber;
-        templateSMS.receiver[0].party.id = messageObject.ContactKey;
-        templateSMS.sender.party.name = messageObject.senderName;
-
-        $('#review_message').text(JSON.stringify(templateSMS, undefined, 2));
+    if (messageChannel == 'S2MS') {
+      messageObject.mobileCountryCode = `{{Event.${eventDefinitionKey}.smartCountryCode}}`;
+      messageObject.messageChannel = 'S2MS';
+      messageObject.messageTemplate = messageTemplate;
+      messageObject.characteristic = characteristic;
+      messageObject.searchIndexes = searchIndexes;
+    } else {
+      messageObject.messageChannel = messageChannel;
+      messageObject.mobileCountryCode = `{{Event.${eventDefinitionKey}.mobileCountryCode}}`;
     }
 
+    templateSMS.id = messageObject.id;
+    templateSMS.content = messageObject.messageContent;
+    templateSMS.countryCode = messageObject.mobileCountryCode;
+    templateSMS.messageType = messageObject.messageChannel;
+    templateSMS.priority = messageObject.priority;
+    templateSMS.isSensitive = messageObject.isSensitive;
+    templateSMS.template = messageObject.messageTemplate;
+    templateSMS.characteristic = messageObject.characteristic;
+    templateSMS.searchIndexes = messageObject.searchIndexes;
+    templateSMS.receiver[0].id = messageObject.ContactKey;
+    templateSMS.receiver[0].phoneNumber = messageObject.mobileNumber;
+    templateSMS.receiver[0].party.id = messageObject.ContactKey;
+    templateSMS.sender.party.name = messageObject.senderName;
 
-    //saves the Custom Activity inarguments which will be referenced during journey run-time
-    function onActivityComplete() {
-        payload['arguments'].execute.inArguments.length = 0;
-        payload['arguments'].execute.inArguments.push(messageObject);
+    $('#review_message').text(JSON.stringify(templateSMS, undefined, 2));
+  }
 
-        payload['metaData'].isConfigured = true;
+  // saves the Custom Activity inarguments which will be referenced during journey run-time
+  function onActivityComplete() {
+    payload.arguments.execute.inArguments.length = 0;
+    payload.arguments.execute.inArguments.push(messageObject);
 
-        connection.trigger('updateActivity', payload);
-        updateNextButton(true);
-    }
+    payload.metaData.isConfigured = true;
+
+    connection.trigger('updateActivity', payload);
+    updateNextButton(true);
+  }
 });

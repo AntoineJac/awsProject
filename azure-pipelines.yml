@@ -64,6 +64,10 @@ jobs:
           SmsApiGatewayKey=$(SMS_GATEWAY_KEY) \
           SmsApiConcurrency=$(SMS_API_CONCURRENCY) \
           EndpointUrlSMS=$(ENDPOINT_URL_SMS)
+    - bash: |
+        apiUrl=$(aws cloudformation describe-stacks --stack-name MC-CA-API-UAT --region af-south-1 --query "Stacks[0].Outputs[?OutputKey=='ExecuteApiUrl'].OutputValue" --output text)
+        echo "##vso[task.setvariable variable=API_URL]$apiUrl"
+        sed -i '' "s|{{ API_ENDPOINT }}|${API_URL}|g" public/config.json
     - task: AWSShellScript@1
       displayName: Deploy Public Folder
       inputs:
