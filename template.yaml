@@ -7,7 +7,7 @@ Description: >
 
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 5
     Runtime: nodejs14.x
     Architectures: 
       - x86_64
@@ -52,7 +52,7 @@ Resources:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: !Sub '${AWS::StackName}-SmsApiQueue'
-      VisibilityTimeout: 30
+      VisibilityTimeout: 60
       ReceiveMessageWaitTimeSeconds: 20
       RedrivePolicy:
         deadLetterTargetArn:
@@ -89,7 +89,7 @@ Resources:
             ApiId: !Ref HttpSmsMcApi
             Path: /execute
             Method: POST
-            TimeoutInMillis: 10000
+            TimeoutInMillis: 20000
   PublishEntryFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -108,25 +108,26 @@ Resources:
             ApiId: !Ref HttpSmsMcApi
             Path: /publish
             Method: POST
-            TimeoutInMillis: 10000
+            TimeoutInMillis: 20000
         ValidateEntry:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpSmsMcApi
             Path: /validate
             Method: POST
-            TimeoutInMillis: 10000
+            TimeoutInMillis: 20000
         SaveEntry:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpSmsMcApi
             Path: /save
             Method: POST
-            TimeoutInMillis: 10000
+            TimeoutInMillis: 20000
   CallSmsApiFunction:
     Type: AWS::Serverless::Function 
     Properties:
       FunctionName: !Sub '${AWS::StackName}-CallSmsApiFunction'
+      Timeout: 15
       Policies:
         - Statement:
             - Effect: Allow
@@ -152,7 +153,7 @@ Resources:
               Fn::GetAtt: 
                 - 'SmsApiQueue'
                 - 'Arn'
-            MaximumBatchingWindowInSeconds: 30
+            MaximumBatchingWindowInSeconds: 10
             BatchSize: 1
   JsonWebTokenLayer:
         Type: AWS::Serverless::LayerVersion

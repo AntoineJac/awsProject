@@ -42,45 +42,45 @@ The default application settings are configured to fit a maximum concurrency of 
 
 SQS Queues settings:
 - SQS Queue:
-  - Visibility timeout 30
+  - Visibility timeout 60 seconds
   - Delivery delay 0
   - retention 4 days
   - max size message 256
-  - Receive message wait time 20s
+  - Receive message wait time 20 seconds
   - dead queue + Maximum receives 2
 - SQS Dead pool:
-  - Visibility timeout 30
+  - Visibility timeout 30 seconds
   - Delivery delay 0
   - retention 4 days
-  - max size message 256
-  - Receive message wait time 20s
+  - max size message 256kb
+  - Receive message wait time 20 seconds
 
 Lambda Function settings:
 - callSmsApiFunction:
   - Retry number: 1
   - Retry timeout: 1 minute
-  - Timeout: 3 seconds
+  - Timeout: 15 seconds
   - memory: 128mb
   - concurrency reserved: 150
   - SQS Queue Trigger:
     - Batch size: 1
-    - Batch window: 30
+    - Batch window: 30 seconds
 - executeFunction:
   - Retry number: 2
   - Retry timeout: 1 minute
-  - Timeout: 3 seconds
+  - Timeout: 5 seconds
   - memory: 128mb
 - publishFunction:
   - Retry number: 2
   - Retry timeout: 1 minute
-  - Timeout: 3 seconds
+  - Timeout: 5 seconds
   - memory: 128mb
 
 API Gateway settings:
 - HttpAPI:
   - burst limit: 100
   - rate limit: 1000
-  - timeout: 10 seconds
+  - timeout: 20 seconds
 
 ## Deploy the application
 
@@ -108,6 +108,7 @@ The second will contain the test data when a change is made on the `test branch`
 For both groups you must create the following variable:
 * **AWS_STACK_NAME**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name.
 * **AWS_REGION**: The AWS region you want to deploy your app to.
+* **AWS_SERVICE_CONNECTION_NAME**: The name of the Azure Service Connection to AWS.
 * **AWS_BUCKET_NAME**: The name of the bucket to deploy to CloudFormation template.
 * **AWS_BUCKET_NAME_PUBLIC**: The name of the bucket to deploy the public folder contianing the Custom Activity UI. This folder must possess the public read permission.
 * **ENDPOINT_URL_SMS**: The endpoint of the SMS Gateway.
@@ -249,4 +250,4 @@ Please click done and activiate your journey. You should receive the SMS after a
 ## Debug and FAQ:
 
 If you have not receive the SMS, please check your data extension information and ask the team to have a look at the Dead Queue.
-If no information are availlale you will need to debug using AWS logs.
+If no information are available you will need to debug using AWS logs.

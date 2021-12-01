@@ -48,9 +48,11 @@ jobs:
           SmsApiConcurrency=${{ env.SMS_API_CONCURRENCY }} \
           EndpointUrlSMS=${{ env.ENDPOINT_URL_SMS }}
       - run: |
-          echo ::set-env name=API_URL::$(aws cloudformation describe-stacks --stack-name MC-CA-API-UAT --region af-south-1 --query "Stacks[0].Outputs[?OutputKey=='ExecuteApiUrl'].OutputValue" --output text)
+          echo "API_URL=$(aws cloudformation describe-stacks --stack-name ${{ env.AWS_STACK_NAME }} \
+          --region ${{ env.AWS_REGION }} --query "Stacks[0].Outputs[?OutputKey=='ExecuteApiUrl'].OutputValue" \
+          --output text)" >> $GITHUB_ENV
       - run: |
-          sed -i '' "s|{{ API_ENDPOINT }}|${{ env.API_URL }}|g" public/config.json
+          sed -i "s|{{ API_ENDPOINT }}|${{ env.API_URL }}|g" public/config.json
       - run: |
           aws s3 sync ./public s3://${{ env.AWS_BUCKET_NAME_PUBLIC }} --region ${{ env.AWS_REGION }} \
           --acl public-read --size-only
