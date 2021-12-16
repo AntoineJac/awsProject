@@ -46,14 +46,14 @@ SQS Queues settings:
   - Visibility timeout 60 seconds
   - Delivery delay 0
   - retention 4 days
-  - max size message 256
+  - max size message 256kb
   - Receive message wait time 20 seconds
   - dead queue + Maximum receives 2
 - SQS Queue:
   - Visibility timeout 60 seconds
   - Delivery delay 0
   - retention 4 days
-  - max size message 256
+  - max size message 256kb
   - Receive message wait time 20 seconds
   - dead queue + Maximum receives 2
 - SQS Dead pool:
@@ -81,7 +81,7 @@ Lambda Function settings:
   - concurrency reserved: 150
   - SQS Queue Trigger:
     - Batch size: 1
-    - Batch window: 10 seconds
+    - Batch window: 30 seconds
 - executeFunction:
   - Retry number: 2
   - Retry timeout: 1 minute
