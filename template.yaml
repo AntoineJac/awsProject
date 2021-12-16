@@ -26,6 +26,11 @@ Parameters:
         Type: 'String'
         #Type: 'AWS::SSM::Parameter::Value<String>'
         #Default: 'SmsApiGatewayKey'
+    SmsBulkApiGatewayKey:
+        Description: 'API SMS Gateway Key'
+        Type: 'String'
+        #Type: 'AWS::SSM::Parameter::Value<String>'
+        #Default: 'SmsBulkApiGatewayKey'
     EndpointUrlSMS:
         Description: 'API SMS Gateway Endpoint URL'
         Type: 'String'
@@ -196,9 +201,9 @@ Resources:
                 - '*'
       Environment:
         Variables:
-          SmsApiGatewayKey: !Ref SmsApiGatewayKey
+          SmsBulkApiGatewayKey: !Ref SmsBulkApiGatewayKey
           EndpointBulkUrlSMS: !Ref EndpointBulkUrlSMS
-      CodeUri: lambdas/CallSmsBulkApi/
+      CodeUri: lambdas/callSmsBulkApi/
       Handler: app.lambdaHandler
       ReservedConcurrentExecutions: !Ref SmsBulkApiConcurrency
       EventInvokeConfig:
