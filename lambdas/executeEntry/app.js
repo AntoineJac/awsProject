@@ -3,8 +3,7 @@ const utilsLayer = require('/opt/nodejs/index');
 const AWS = require('aws-sdk');
 /* eslint-enable */
 
-const { smsQueueUrl, smsApiFunction } = process.env;
-const lambda = new AWS.Lambda();
+const { smsQueueUrl, smsQueueUrlBulk } = process.env;
 const sqs = new AWS.SQS();
 
 const returnPayloadSms = (decoded) => {
@@ -36,8 +35,9 @@ const returnPayloadSms = (decoded) => {
 
 /* eslint-disable no-unused-vars */
 const sendSqsMessage = async (payloadSMS) => {
+  const smsQueueUrlToUse = payloadSMS.isBulked ? smsQueueUrlBulk : smsQueueUrl;
   const params = {
-    QueueUrl: smsQueueUrl,
+    QueueUrl: smsQueueUrlToUse,
     MessageBody: payloadSMS,
   };
 
@@ -52,26 +52,6 @@ const sendSqsMessage = async (payloadSMS) => {
   });
 };
 
-/* eslint-disable no-unused-vars */
-const invokeSmsApiLambda = async (payloadSMS) => {
-  const params = {
-    FunctionName: smsApiFunction,
-    InvocationType: 'Event',
-    Payload: payloadSMS,
-  };
-
-  return new Promise((resolve, reject) => {
-    lambda.invoke(params, (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve('SmsApiFunction');
-      }
-    });
-  });
-};
-/* eslint-enable no-unused-vars */
-
 const mcActivityExecute = async (decodeBase6JWT) => new Promise((resolve, reject) => {
   // Decode the post body test
   utilsLayer.processMC(decodeBase6JWT)
@@ -79,7 +59,6 @@ const mcActivityExecute = async (decodeBase6JWT) => new Promise((resolve, reject
       if (decoded) {
         let payloadSMS = returnPayloadSms(decoded);
         payloadSMS = JSON.stringify(payloadSMS);
-        // invokeSmsApiLambda(payloadSMS)
         sendSqsMessage(payloadSMS)
           .then((response) => {
             resolve({
@@ -93,7 +72,7 @@ const mcActivityExecute = async (decodeBase6JWT) => new Promise((resolve, reject
             });
           })
           .catch((err) => {
-            throw new utilsLayer.CustomError(`Error when Invoking the SMS API Lambda Function ErrorName: ${err.name}  -  ErrorMessage: ${err.message}`, 401, 'invokeSmsApiLambdaFunction');
+            throw new utilsLayer.CustomError(`Error when Sending the SMS Queue, ErrorName: ${err.name}  -  ErrorMessage: ${err.message}`, 401, 'SmsApiQueue');
           });
       }
     })

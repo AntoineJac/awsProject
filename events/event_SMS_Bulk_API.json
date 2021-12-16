@@ -1,0 +1,36 @@
+{
+  "Records": [
+      {
+          "messageId": "11d6ee51-4cc7-4302-9e22-7cd8afdaadf5",
+          "receiptHandle": "AQEBBX8nesZEXmkhsmZeyIE8iQAMig7qw...",
+          "body": "{\"id\": \"journeyTest_ActivityTest_ContactKey_a23e8be46251\", \"messageChannel\": \"SMS\", \"priority\": \"1\", \"isSensitive\": false, \"messageContent\": \"This is a test that all is OK!\", \"mobileNumber\": \"33615327982\", \"mobileCountryCode\": \"FRA\", \"senderName\": \"TestMC\", \"ContactKey\": \"14bc19e6-746e-42e2-a387-64708b8aaaa1\" }",
+          "attributes": {
+              "ApproximateReceiveCount": "1",
+              "SentTimestamp": "1573251510775",
+              "SenderId": "AIDAIO23YVJENQZJOL4VO",
+              "ApproximateFirstReceiveTimestamp": "1573251510775"
+          },
+          "messageAttributes": {},
+          "md5OfBody": "e4e68fb7bd0e697a0ae8f1bb342846b3",
+          "eventSource": "aws:sqs",
+          "eventSourceARN": "arn:aws:sqs:af-south-1:123456789012:fifo.fifo",
+          "awsRegion": "af-south-1"
+      },
+      {
+        "messageId": "11d6ee51-4cc7-4302-9e22-7cd8afdaadf6",
+        "receiptHandle": "AQEBBX8nesZEXmkhsmZeyIE8iQAMig7qw...",
+        "body": "{\"id\": \"154a240a-b30e-441d-9087-a23e8be46252\", \"messageChannel\": \"SMS\", \"priority\": \"2\", \"isSensitive\": true, \"messageContent\": \"This is a test that all is OK2!\", \"mobileNumber\": \"33615327984\", \"mobileCountryCode\": \"FRA\", \"senderName\": \"TestMC\", \"characteristic\": [{}], \"searchIndexes\": [{}], \"ContactKey\": \"14bc19e6-746e-42e2-a387-64708b8bbbb2\" }",
+        "attributes": {
+            "ApproximateReceiveCount": "1",
+            "SentTimestamp": "1573251510774",
+            "SenderId": "AIDAIO23YVJENQZJOL4VO",
+            "ApproximateFirstReceiveTimestamp": "1573251510774"
+        },
+        "messageAttributes": {},
+        "md5OfBody": "e4e68fb7bd0e697a0ae8f1bb342846b3",
+        "eventSource": "aws:sqs",
+        "eventSourceARN": "arn:aws:sqs:af-south-1:123456789012:fifo.fifo",
+        "awsRegion": "af-south-1"
+    }
+  ]
+}

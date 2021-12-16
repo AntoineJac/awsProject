@@ -12,8 +12,12 @@ pool:
 variables:
 - ${{ if eq(variables['build.SourceBranchName'], 'main') }}:
   - group: 'mc-custom-activity-prod-env-variable-group'
+  - name: CA_NAME
+    value: 'PROD'
 - ${{ if eq(variables['build.SourceBranchName'], 'test') }}:
   - group: 'mc-custom-activity-uat-env-variable-group'
+  - name: CA_NAME
+    value: 'UAT'
 
 jobs:
 - job: Build_Test
@@ -63,7 +67,10 @@ jobs:
           JwtTokenSecretMC=$(MC_JWT_SECRET) \
           SmsApiGatewayKey=$(SMS_GATEWAY_KEY) \
           SmsApiConcurrency=$(SMS_API_CONCURRENCY) \
-          EndpointUrlSMS=$(ENDPOINT_URL_SMS)
+          SmsBulkApiConcurrency=$(SMS_BULK_API_CONCURRENCY) \
+          SmsBulkApiBatchSize=$(SMS_BULK_API_BATCH_SIZE) \
+          EndpointUrlSMS=$(ENDPOINT_URL_SMS) \
+          EndpointBulkUrlSMS=$(ENDPOINT_BULK_URL_SMS)
     - task: AWSShellScript@1
       displayName: Get & Replace API URl
       inputs:
@@ -74,6 +81,7 @@ jobs:
           apiUrl=$(aws cloudformation describe-stacks --stack-name $(AWS_STACK_NAME) --region $(AWS_REGION) \
           --query "Stacks[0].Outputs[?OutputKey=='ExecuteApiUrl'].OutputValue" --output text)
           sed -i "s|{{ API_ENDPOINT }}|$apiUrl|g" public/config.json
+          sed -i "s|{{ CA_NAME }}|$(CA_NAME)|g" public/config.json
     - task: AWSShellScript@1
       displayName: Deploy Public Folder
       inputs:

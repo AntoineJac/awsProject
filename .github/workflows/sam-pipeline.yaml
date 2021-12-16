@@ -8,7 +8,9 @@ env:
   MC_JWT_SECRET: ${{ secrets.MC_JWT_SECRET }}
   SMS_GATEWAY_KEY: ${{ secrets.SMS_GATEWAY_KEY }}
   SMS_API_CONCURRENCY: ${{ secrets.SMS_API_CONCURRENCY }}
+  SMS_API_CONCURRENCY: ${{ secrets.SMS_BULK_API_BATCH_SIZE }}
   ENDPOINT_URL_SMS: ${{ secrets.ENDPOINT_URL_SMS }}
+  ENDPOINT_URL_SMS: ${{ secrets.ENDPOINT_BULK_URL_SMS }}
 
 on:
   push:
@@ -18,6 +20,14 @@ jobs:
   build-deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Set env to staging
+        if: endsWith(github.ref, '/test')
+        run: |
+          echo "CA_NAME=UAT" >> $GITHUB_ENV
+      - name: Set env to production
+        if: endsWith(github.ref, '/main')
+        run: |
+          echo "CA_NAME=PROD" >> $GITHUB_ENV
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
@@ -46,13 +56,17 @@ jobs:
           JwtTokenSecretMC=${{ env.MC_JWT_SECRET }} \
           SmsApiGatewayKey=${{ env.SMS_GATEWAY_KEY }} \
           SmsApiConcurrency=${{ env.SMS_API_CONCURRENCY }} \
-          EndpointUrlSMS=${{ env.ENDPOINT_URL_SMS }}
+          SmsBulkApiConcurrency=${{ env.SMS_BULK_API_CONCURRENCY }} \
+          SmsBulkApiBatchSize=${{ env.SMS_BULK_API_BATCH_SIZE }} \
+          EndpointUrlSMS=${{ env.ENDPOINT_URL_SMS }} \
+          EndpointBulkUrlSMS=${{ env.ENDPOINT_BULK_URL_SMS }}
       - run: |
           echo "API_URL=$(aws cloudformation describe-stacks --stack-name ${{ env.AWS_STACK_NAME }} \
           --region ${{ env.AWS_REGION }} --query "Stacks[0].Outputs[?OutputKey=='ExecuteApiUrl'].OutputValue" \
           --output text)" >> $GITHUB_ENV
       - run: |
           sed -i "s|{{ API_ENDPOINT }}|${{ env.API_URL }}|g" public/config.json
+          sed -i "s|{{ CA_NAME }}|${{ env.CA_NAME }}|g" public/config.json
       - run: |
           aws s3 sync ./public s3://${{ env.AWS_BUCKET_NAME_PUBLIC }} --region ${{ env.AWS_REGION }} \
           --acl public-read --size-only

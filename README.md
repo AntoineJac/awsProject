@@ -10,6 +10,7 @@ It includes the following ressources and folders.
 - images - Image for the repository Readme.
 - lambda - Folder for the application's Lambda functions.
 - lambda/CallSmsApi - Function triggered by the SQS Queue and used to call the SMS Api.
+- lambda/CallSmsBulkApi - Function triggered by the SQS Bulk Queue and used to call the SMS Bulk Api.
 - lambda/ExecuteEntry - Function triggered by the API Gateway and used to send message the SQS Queue.
 - lambda/PublisheEntry - Function used by Maketing Cloud when validating the journey.
 - lambda/{{function}}/tests - Unit tests for the application code.
@@ -32,8 +33,8 @@ It includes the following ressources and folders.
 - 3: Api Gateway will call the PublishFunction returning a 200 status code.
 - 4: Marketing Cloud will call the execute route during journey execution and pass data using Data Binding (https://developer.salesforce.com/docs/atlas.en-us.noversion.mc-apis.meta/mc-apis/how-data-binding-works.htm)
 - 5: Api Gateway will call the ExecuteFunction. The function send the data into the SQS Queue and return a 200 status code.
-- 6: SQS Queue will receive all the messages and trigger the CallSMSApiFunction. It will retry only once and send the message records to the SQS DeadQueue.
-- 7: The CallSMSApiFunction parse the records from the SQS Queue and make an api call to the SMS Api endpoint. The message are deleted from the queue only if the function return a 200 status code. 
+- 6: SQS Queue will receive all the messages and trigger the CallSMSApiFunction/CallSMSBulkApiFunction. It will retry only once and send the message records to the SQS DeadQueue.
+- 7: The CallSMSApiFunction/CallSMSBulkApiFunction parse the records from the SQS Queue and make an api call to the SMS Api endpoint. The message are deleted from the queue only if the function return a 200 status code. 
 **Current batch size is 1, when implementing the bulk api it is essential to delete the message manually using the sqs.deleteMessage method.**
 
 ## Application and Resources settings
@@ -41,6 +42,13 @@ It includes the following ressources and folders.
 The default application settings are configured to fit a maximum concurrency of 150 and single API call.
 
 SQS Queues settings:
+- SQS Bulk Queue:
+  - Visibility timeout 60 seconds
+  - Delivery delay 0
+  - retention 4 days
+  - max size message 256
+  - Receive message wait time 20 seconds
+  - dead queue + Maximum receives 2
 - SQS Queue:
   - Visibility timeout 60 seconds
   - Delivery delay 0
@@ -56,6 +64,15 @@ SQS Queues settings:
   - Receive message wait time 20 seconds
 
 Lambda Function settings:
+- CallSmsBulkApiFunction:
+  - Retry number: 1
+  - Retry timeout: 1 minute
+  - Timeout: 15 seconds
+  - memory: 128mb
+  - concurrency reserved: 150
+  - SQS Queue Trigger:
+    - Batch size: 50
+    - Batch window: 10 seconds
 - callSmsApiFunction:
   - Retry number: 1
   - Retry timeout: 1 minute
@@ -64,7 +81,7 @@ Lambda Function settings:
   - concurrency reserved: 150
   - SQS Queue Trigger:
     - Batch size: 1
-    - Batch window: 30 seconds
+    - Batch window: 10 seconds
 - executeFunction:
   - Retry number: 2
   - Retry timeout: 1 minute

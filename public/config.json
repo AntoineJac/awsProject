@@ -9,7 +9,7 @@
     "type": "REST",
     "lang": {
        "en-US": {
-           "name": "REST Activity Multichoice",
+           "name": "REST Activity Multichoice {{ CA_NAME }}",
            "description": "A REST activity used to send messages from JB to Multichoice customers"
        }
     },

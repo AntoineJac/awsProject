@@ -23,6 +23,7 @@ define(['postmonger'], (Postmonger) => {
   let senderName = '';
   let priority = '';
   let isSensitive = '';
+  let isBulked = '';
   let messageTemplate = '';
   let characteristic = [];
   let searchIndexes = [];
@@ -31,6 +32,7 @@ define(['postmonger'], (Postmonger) => {
     id: '',
     content: '',
     isSensitive: '',
+    isBulked: '',
     description: 'Message Sent by Custom Activity in Journey Builder',
     countryCode: '',
     messageType: '',
@@ -105,6 +107,7 @@ define(['postmonger'], (Postmonger) => {
       senderName = args.senderName;
       priority = args.priority;
       isSensitive = args.isSensitive;
+      isBulked = args.isBulked;
       messageTemplate = args.messageTemplate;
       characteristic = JSON.stringify(args.characteristic);
       if (characteristic) characteristic = characteristic.slice(1, -1);
@@ -116,6 +119,7 @@ define(['postmonger'], (Postmonger) => {
       $('#senderName').val(senderName);
       $('#priority').val(priority);
       $('#isSensitive').val(isSensitive);
+      $('#isBulked').val(isBulked);
       $('#messageTemplate').val(messageTemplate);
       $('#characteristic').val(characteristic);
       $('#searchIndexes').val(searchIndexes);
@@ -197,7 +201,7 @@ define(['postmonger'], (Postmonger) => {
   function isStepOneValid() {
     return (
       isValidValue(messageContent) && isValidValue(messageChannel) && isValidValue(senderName)
-                && isValidValue(priority) && isValidValue(isSensitive)
+                && isValidValue(priority) && isValidValue(isSensitive) && isValidValue(isBulked)
                 && prepareCharacteristic() && prepareSearchIndexes()
     );
   }
@@ -216,6 +220,12 @@ define(['postmonger'], (Postmonger) => {
 
   function getIsSensitiveValue() {
     return $('#isSensitive option:selected')
+      .val()
+      .trim();
+  }
+
+  function getIsBulkedValue() {
+    return $('#isBulked option:selected')
       .val()
       .trim();
   }
@@ -329,6 +339,11 @@ define(['postmonger'], (Postmonger) => {
     updateNextButton(isStepOneValid());
   });
 
+  $('#isBulked').change(() => {
+    isBulked = getIsBulkedValue();
+    updateNextButton(isStepOneValid());
+  });
+
   $('#messageContent').keyup(() => {
     messageContent = getContentValue();
     messageContent = messageContent.replaceAll(/{{(.*?)}}/gi, (x) => {
@@ -367,6 +382,7 @@ define(['postmonger'], (Postmonger) => {
     messageObject.senderName = senderName;
     messageObject.priority = priority;
     messageObject.isSensitive = isSensitive;
+    messageObject.isBulked = isBulked;
 
     if (messageChannel == 'S2MS') {
       messageObject.mobileCountryCode = `{{Event.${eventDefinitionKey}.smartCountryCode}}`;

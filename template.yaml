@@ -31,11 +31,26 @@ Parameters:
         Type: 'String'
         #Type: 'AWS::SSM::Parameter::Value<String>'
         #Default: 'EndpointUrlSMS'
+    EndpointBulkUrlSMS:
+        Description: 'BULK API SMS Gateway Endpoint URL'
+        Type: 'String'
+        #Type: 'AWS::SSM::Parameter::Value<String>'
+        #Default: 'EndpointBulkUrlSMS'
     SmsApiConcurrency:
         Description: 'API SMS Gateway Concurrency'
         Type: 'String'
         #Type: 'AWS::SSM::Parameter::Value<String>'
         #Default: 'SmsApiConcurrency'
+    SmsBulkApiConcurrency:
+        Description: 'BULK API SMS Gateway Concurrency'
+        Type: 'String'
+        #Type: 'AWS::SSM::Parameter::Value<String>'
+        #Default: 'SmsBulkApiConcurrency'
+    SmsBulkApiBatchSize:
+        Description: 'BULK API SMS Gateway Batch Size'
+        Type: 'String'
+        #Type: 'AWS::SSM::Parameter::Value<String>'
+        #Default: 'SmsBulkApiBatchSize'
 Resources:
   HttpSmsMcApi:
     Type: AWS::Serverless::HttpApi
@@ -60,6 +75,18 @@ Resources:
             - 'SmsDeadQueue'
             - 'Arn'
         maxReceiveCount: 2
+  SmsBulkApiQueue: 
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub '${AWS::StackName}-SmsBulkApiQueues'
+      VisibilityTimeout: 60
+      ReceiveMessageWaitTimeSeconds: 20
+      RedrivePolicy:
+        deadLetterTargetArn:
+          Fn::GetAtt: 
+            - 'SmsDeadQueue'
+            - 'Arn'
+        maxReceiveCount: 2
   ExecuteEntryFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -76,8 +103,8 @@ Resources:
       Environment:
         Variables:
           MCSecret: !Ref JwtTokenSecretMC
-          smsApiFunction: !Sub '${AWS::StackName}-CallSmsApiFunction'
           smsQueueUrl: !Ref SmsApiQueue
+          smsQueueBulkUrl: !Ref SmsBulkApiQueue
       CodeUri: lambdas/executeEntry/
       Handler: app.lambdaHandler
       Layers:
@@ -155,6 +182,38 @@ Resources:
                 - 'Arn'
             MaximumBatchingWindowInSeconds: 10
             BatchSize: 1
+  CallSmsBulkApiFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-CallSmsBulkApiFunction'
+      Timeout: 15
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - 'sqs:ReceiveMessage'
+              Resource:
+                - '*'
+      Environment:
+        Variables:
+          SmsApiGatewayKey: !Ref SmsApiGatewayKey
+          EndpointBulkUrlSMS: !Ref EndpointBulkUrlSMS
+      CodeUri: lambdas/CallSmsBulkApi/
+      Handler: app.lambdaHandler
+      ReservedConcurrentExecutions: !Ref SmsBulkApiConcurrency
+      EventInvokeConfig:
+        MaximumEventAgeInSeconds: 300
+        MaximumRetryAttempts: 1
+      Events:
+        MySQSEvent:
+          Type: SQS
+          Properties:
+            Queue: 
+              Fn::GetAtt: 
+                - 'SmsBulkApiQueue'
+                - 'Arn'
+            MaximumBatchingWindowInSeconds: 10
+            BatchSize: !Ref SmsBulkApiBatchSize
   JsonWebTokenLayer:
         Type: AWS::Serverless::LayerVersion
         Properties:
@@ -185,14 +244,23 @@ Outputs:
     Description: 'Implicit IAM Role created for Publish function'
     Value: !GetAtt PublishEntryFunctionRole.Arn
   CallSmsApiFunction:
-    Description: 'Call SMS APILambda Function ARN'
+    Description: 'Call SMS API Lambda Function ARN'
     Value: !GetAtt CallSmsApiFunction.Arn
   CallSmsApiFunctionIamRole:
     Description: 'Implicit IAM Role created for CallSmsApi function'
     Value: !GetAtt CallSmsApiFunctionRole.Arn
+  CallSmsBulkApiFunction:
+    Description: 'Call SMS Bulk API Lambda Function ARN'
+    Value: !GetAtt CallSmsBulkApiFunction.Arn
+  CallSmsBulkApiFunctionIamRole:
+    Description: 'Implicit IAM Role created for CallSmsBulkApi function'
+    Value: !GetAtt CallSmsBulkApiFunctionRole.Arn    
   SmsApiQueue:
     Description: 'SMS API Queue ARN'
     Value: !GetAtt SmsApiQueue.Arn
+  SmsBulkApiQueue:
+    Description: 'SMS Bulk API Queue ARN'
+    Value: !GetAtt SmsBulkApiQueue.Arn    
   SmsDeadQueue:
     Description: 'SMS API Dead Queue ARN'
     Value: !GetAtt SmsDeadQueue.Arn
