@@ -33,7 +33,7 @@ It includes the following ressources and folders.
 - 3: Api Gateway will call the PublishFunction returning a 200 status code.
 - 4: Marketing Cloud will call the execute route during journey execution and pass data using Data Binding (https://developer.salesforce.com/docs/atlas.en-us.noversion.mc-apis.meta/mc-apis/how-data-binding-works.htm)
 - 5: Api Gateway will call the ExecuteFunction. The function send the data into the SQS Queue and return a 200 status code.
-- 6: SQS Queue will receive all the messages and trigger the CallSMSApiFunction/CallSMSBulkApiFunction. It will retry only once and send the message records to the SQS DeadQueue.
+- 6: SQS Queue will receive all the messages and trigger the CallSMSApiFunction/CallSMSBulkApiFunction. It will retry only once and send the message records to the SQS DeadQueue/BulkDeadQueue.
 - 7: The CallSMSApiFunction/CallSMSBulkApiFunction parse the records from the SQS Queue and make an api call to the SMS Api endpoint. The message are deleted from the queue only if the function return a 200 status code. 
 **Current batch size is 1, when implementing the bulk api it is essential to delete the message manually using the sqs.deleteMessage method.**
 
@@ -48,7 +48,7 @@ SQS Queues settings:
   - retention 4 days
   - max size message 256kb
   - Receive message wait time 20 seconds
-  - dead queue + Maximum receives 2
+  - Bulk dead queue + Maximum receives 2
 - SQS Queue:
   - Visibility timeout 60 seconds
   - Delivery delay 0
@@ -56,6 +56,12 @@ SQS Queues settings:
   - max size message 256kb
   - Receive message wait time 20 seconds
   - dead queue + Maximum receives 2
+- SQS Bulk Dead pool:
+  - Visibility timeout 30 seconds
+  - Delivery delay 0
+  - retention 4 days
+  - max size message 256kb
+  - Receive message wait time 20 seconds
 - SQS Dead pool:
   - Visibility timeout 30 seconds
   - Delivery delay 0
