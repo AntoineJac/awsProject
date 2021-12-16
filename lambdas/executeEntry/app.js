@@ -3,7 +3,7 @@ const utilsLayer = require('/opt/nodejs/index');
 const AWS = require('aws-sdk');
 /* eslint-enable */
 
-const { smsQueueUrl, smsQueueUrlBulk } = process.env;
+const { smsQueueUrl, smsQueueBulkUrl } = process.env;
 const sqs = new AWS.SQS();
 
 const returnPayloadSms = (decoded) => {
@@ -35,7 +35,7 @@ const returnPayloadSms = (decoded) => {
 
 /* eslint-disable no-unused-vars */
 const sendSqsMessage = async (payloadSMS) => {
-  const smsQueueUrlToUse = payloadSMS.isBulked ? smsQueueUrlBulk : smsQueueUrl;
+  const smsQueueUrlToUse = payloadSMS.isBulked === 'True' ? smsQueueBulkUrl : smsQueueUrl;
   const params = {
     QueueUrl: smsQueueUrlToUse,
     MessageBody: payloadSMS,
