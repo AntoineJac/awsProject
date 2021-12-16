@@ -78,7 +78,7 @@ Lambda Function settings:
   - concurrency reserved: 150
   - SQS Queue Trigger:
     - Batch size: 50
-    - Batch window: 10 seconds
+    - Batch window: 30 seconds
 - callSmsApiFunction:
   - Retry number: 1
   - Retry timeout: 1 minute

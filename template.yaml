@@ -222,7 +222,7 @@ Resources:
               Fn::GetAtt: 
                 - 'SmsBulkApiQueue'
                 - 'Arn'
-            MaximumBatchingWindowInSeconds: 10
+            MaximumBatchingWindowInSeconds: 30
             BatchSize: !Ref SmsBulkApiBatchSize
   JsonWebTokenLayer:
         Type: AWS::Serverless::LayerVersion
