@@ -68,7 +68,7 @@ define(['postmonger'], (Postmonger) => {
   const templateBulkSMS = {
     id: '',
     batchId: '',
-    numRecords: '',
+    numRecords: '...',
     messageType: '',
     sender: {
       id: 'JourneyBuilderCustomActivity',
@@ -430,6 +430,7 @@ define(['postmonger'], (Postmonger) => {
     messageObject.senderName = senderName;
     messageObject.priority = priority;
     messageObject.isSensitive = isSensitive;
+    messageObject.isBulked = isBulked;
 
     if (messageChannel == 'S2MS') {
       messageObject.mobileCountryCode = `{{Event.${eventDefinitionKey}.smartCountryCode}}`;
@@ -442,30 +443,31 @@ define(['postmonger'], (Postmonger) => {
       messageObject.mobileCountryCode = `{{Event.${eventDefinitionKey}.mobileCountryCode}}`;
     }
 
-    templateSMS.sender.party.name = messageObject.senderName;
-    templateSMS.messageType = messageObject.messageChannel;
-    if (isBulked) {
+    if (isBulked == 'True') {
       const numCharctArray = (messageObject.id.match(/_/g) || []).length - 1;
       const batchId = messageObject.id.split('_')
         .slice(0, numCharctArray)
         .join('_') || messageObject.id;
-      templateSMS.id = 'f924315e-79d8-429d-ab3c-ae9704a0f006';
-      templateSMS.batchId = batchId;
-
-      templateSMS.communicationMessages[0].id = messageObject.id;
-      templateSMS.communicationMessages[0].content = messageObject.messageContent;
-      templateSMS.communicationMessages[0].countryCode = messageObject.mobileCountryCode;
-      templateSMS.communicationMessages[0].priority = messageObject.priority;
-      templateSMS.communicationMessages[0].isSensitive = messageObject.isSensitive;
-      templateSMS.communicationMessages[0].template = messageObject.messageTemplate;
-      templateSMS.communicationMessages[0].characteristic = messageObject.characteristic;
-      templateSMS.communicationMessages[0].searchIndexes = messageObject.searchIndexes;
-      templateSMS.communicationMessages[0].receiver[0].id = messageObject.ContactKey;
-      templateSMS.communicationMessages[0].receiver[0].phoneNumber = messageObject.mobileNumber;
-      templateSMS.communicationMessages[0].receiver[0].party.id = messageObject.ContactKey;
+      templateBulkSMS.id = 'f924315e-79d8-429d-ab3c-ae9704a0f006';
+      templateBulkSMS.batchId = batchId;
+      templateBulkSMS.messageType = messageObject.messageChannel;
+      templateBulkSMS.sender.party.name = messageObject.senderName;
+      templateBulkSMS.communicationMessages[0].id = messageObject.id;
+      templateBulkSMS.communicationMessages[0].content = messageObject.messageContent;
+      templateBulkSMS.communicationMessages[0].countryCode = messageObject.mobileCountryCode;
+      templateBulkSMS.communicationMessages[0].priority = messageObject.priority;
+      templateBulkSMS.communicationMessages[0].isSensitive = messageObject.isSensitive;
+      templateBulkSMS.communicationMessages[0].template = messageObject.messageTemplate;
+      templateBulkSMS.communicationMessages[0].characteristic = messageObject.characteristic;
+      templateBulkSMS.communicationMessages[0].searchIndexes = messageObject.searchIndexes;
+      templateBulkSMS.communicationMessages[0].receiver[0].id = messageObject.ContactKey;
+      templateBulkSMS.communicationMessages[0].receiver[0].phoneNumber = messageObject.mobileNumber;
+      templateBulkSMS.communicationMessages[0].receiver[0].party.id = messageObject.ContactKey;
+      $('#review_message').text(JSON.stringify(templateBulkSMS, undefined, 2));
     } else {
       templateSMS.id = messageObject.id;
       templateSMS.content = messageObject.messageContent;
+      templateSMS.messageType = messageObject.messageChannel;
       templateSMS.countryCode = messageObject.mobileCountryCode;
       templateSMS.priority = messageObject.priority;
       templateSMS.isSensitive = messageObject.isSensitive;
@@ -475,9 +477,9 @@ define(['postmonger'], (Postmonger) => {
       templateSMS.receiver[0].id = messageObject.ContactKey;
       templateSMS.receiver[0].phoneNumber = messageObject.mobileNumber;
       templateSMS.receiver[0].party.id = messageObject.ContactKey;
+      templateSMS.sender.party.name = messageObject.senderName;
+       $('#review_message').text(JSON.stringify(templateSMS, undefined, 2));
     }
-
-    $('#review_message').text(JSON.stringify(templateSMS, undefined, 2));
   }
 
   // saves the Custom Activity inarguments which will be referenced during journey run-time
