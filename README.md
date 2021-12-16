@@ -126,8 +126,8 @@ For both groups you must create the following variable:
 * **AWS_STACK_NAME**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name.
 * **AWS_REGION**: The AWS region you want to deploy your app to.
 * **AWS_SERVICE_CONNECTION_NAME**: The name of the Azure Service Connection to AWS.
-* **AWS_KEY_ID**: If using Github - The AWS key id.
-* **AWS_SECRET_KEY**: If using Github - The AWS secret.
+* **AWS_ACCESS_KEY_ID**: If using Github - The AWS key id.
+* **AWS_SECRET_ACCESS_KEY**: If using Github - The AWS secret.
 * **AWS_BUCKET_NAME**: The name of the bucket to deploy to CloudFormation template.
 * **AWS_BUCKET_NAME_PUBLIC**: The name of the bucket to deploy the public folder contianing the Custom Activity UI. This folder must possess the public read permission.
 * **MC_JWT_SECRET**: The Marketing Cloud JWT secret that you can retrieve from Installed Packages. It is used to decrypt the payload.
