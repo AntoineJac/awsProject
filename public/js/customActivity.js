@@ -32,7 +32,6 @@ define(['postmonger'], (Postmonger) => {
     id: '',
     content: '',
     isSensitive: '',
-    isBulked: '',
     description: 'Message Sent by Custom Activity in Journey Builder',
     countryCode: '',
     messageType: '',
@@ -64,6 +63,55 @@ define(['postmonger'], (Postmonger) => {
         '@referredType': 'externalSystem',
       },
     },
+  };
+
+  const templateBulkSMS = {
+    id: '',
+    batchId: '',
+    numRecords: '',
+    messageType: '',
+    sender: {
+      id: 'JourneyBuilderCustomActivity',
+      name: 'MarketingCloud',
+      phoneNumber: '919743464658',
+      party: {
+        id: 'JourneyBuilderCustomActivity',
+        role: 'SmsApiGateway',
+        name: '',
+        '@referredType': 'externalSystem',
+      },
+    },
+    communicationMessages: [
+      {
+        id: '',
+        content: '',
+        isSensitive: '',
+        description: 'Message Sent by Custom Activity in Journey Builder',
+        countryCode: '',
+        priority: '',
+        template: '',
+        characteristic: [],
+        searchIndexes: [],
+        receiver: [
+          {
+            id: '',
+            name: 'ContactKey',
+            phoneNumber: '',
+            party: {
+              id: '',
+              role: 'Customer',
+              name: 'ContactKey',
+              '@referredType': 'Individual',
+            },
+          },
+        ],
+      },
+      {
+        id: '...',
+        content: '...',
+        '...': '...'
+      }
+    ]
   };
 
   /* INITIALIZATION */
@@ -382,7 +430,6 @@ define(['postmonger'], (Postmonger) => {
     messageObject.senderName = senderName;
     messageObject.priority = priority;
     messageObject.isSensitive = isSensitive;
-    messageObject.isBulked = isBulked;
 
     if (messageChannel == 'S2MS') {
       messageObject.mobileCountryCode = `{{Event.${eventDefinitionKey}.smartCountryCode}}`;
@@ -395,19 +442,40 @@ define(['postmonger'], (Postmonger) => {
       messageObject.mobileCountryCode = `{{Event.${eventDefinitionKey}.mobileCountryCode}}`;
     }
 
-    templateSMS.id = messageObject.id;
-    templateSMS.content = messageObject.messageContent;
-    templateSMS.countryCode = messageObject.mobileCountryCode;
-    templateSMS.messageType = messageObject.messageChannel;
-    templateSMS.priority = messageObject.priority;
-    templateSMS.isSensitive = messageObject.isSensitive;
-    templateSMS.template = messageObject.messageTemplate;
-    templateSMS.characteristic = messageObject.characteristic;
-    templateSMS.searchIndexes = messageObject.searchIndexes;
-    templateSMS.receiver[0].id = messageObject.ContactKey;
-    templateSMS.receiver[0].phoneNumber = messageObject.mobileNumber;
-    templateSMS.receiver[0].party.id = messageObject.ContactKey;
     templateSMS.sender.party.name = messageObject.senderName;
+    templateSMS.messageType = messageObject.messageChannel;
+    if (isBulked) {
+      const numCharctArray = (messageObject.id.match(/_/g) || []).length - 1;
+      const batchId = messageObject.id.split('_')
+        .slice(0, numCharctArray)
+        .join('_') || messageObject.id;
+      templateSMS.id = 'f924315e-79d8-429d-ab3c-ae9704a0f006';
+      templateSMS.batchId = batchId;
+
+      templateSMS.communicationMessages[0].id = messageObject.id;
+      templateSMS.communicationMessages[0].content = messageObject.messageContent;
+      templateSMS.communicationMessages[0].countryCode = messageObject.mobileCountryCode;
+      templateSMS.communicationMessages[0].priority = messageObject.priority;
+      templateSMS.communicationMessages[0].isSensitive = messageObject.isSensitive;
+      templateSMS.communicationMessages[0].template = messageObject.messageTemplate;
+      templateSMS.communicationMessages[0].characteristic = messageObject.characteristic;
+      templateSMS.communicationMessages[0].searchIndexes = messageObject.searchIndexes;
+      templateSMS.communicationMessages[0].receiver[0].id = messageObject.ContactKey;
+      templateSMS.communicationMessages[0].receiver[0].phoneNumber = messageObject.mobileNumber;
+      templateSMS.communicationMessages[0].receiver[0].party.id = messageObject.ContactKey;
+    } else {
+      templateSMS.id = messageObject.id;
+      templateSMS.content = messageObject.messageContent;
+      templateSMS.countryCode = messageObject.mobileCountryCode;
+      templateSMS.priority = messageObject.priority;
+      templateSMS.isSensitive = messageObject.isSensitive;
+      templateSMS.template = messageObject.messageTemplate;
+      templateSMS.characteristic = messageObject.characteristic;
+      templateSMS.searchIndexes = messageObject.searchIndexes;
+      templateSMS.receiver[0].id = messageObject.ContactKey;
+      templateSMS.receiver[0].phoneNumber = messageObject.mobileNumber;
+      templateSMS.receiver[0].party.id = messageObject.ContactKey;
+    }
 
     $('#review_message').text(JSON.stringify(templateSMS, undefined, 2));
   }
