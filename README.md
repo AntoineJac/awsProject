@@ -126,12 +126,18 @@ For both groups you must create the following variable:
 * **AWS_STACK_NAME**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name.
 * **AWS_REGION**: The AWS region you want to deploy your app to.
 * **AWS_SERVICE_CONNECTION_NAME**: The name of the Azure Service Connection to AWS.
+* **AWS_KEY_ID**: If using Github - The AWS key id.
+* **AWS_SECRET_KEY**: If using Github - The AWS secret.
 * **AWS_BUCKET_NAME**: The name of the bucket to deploy to CloudFormation template.
 * **AWS_BUCKET_NAME_PUBLIC**: The name of the bucket to deploy the public folder contianing the Custom Activity UI. This folder must possess the public read permission.
-* **ENDPOINT_URL_SMS**: The endpoint of the SMS Gateway.
 * **MC_JWT_SECRET**: The Marketing Cloud JWT secret that you can retrieve from Installed Packages. It is used to decrypt the payload.
-* **SMS_GATEWAY_KEY**: The SMS Gateway secret used to make SMS api called.
+* **ENDPOINT_URL_SMS**: The endpoint of the SMS Gateway.
+* **ENDPOINT_BULK_URL_SMS**: The endpoint of the Bulk SMS Gateway.
+* **SMS_GATEWAY_KEY**: The SMS Gateway secret used to make SMS api calls.
+* **SMS_BULK_GATEWAY_KEY**: The SMS Gateway secret used to make Bulk SMS api calls.
 * **SMS_API_CONCURRENCY**: The maximum concurrency used to send request to the SMS Gateway.
+* **SMS_BULK_API_CONCURRENCY**: The maximum concurrency used to send request to the Bulk SMS Gateway.
+* **SMS_BULK_API_BATCH_SIZE**: The maximum number of messages inlcuded in requests sent to the Bulk SMS Gateway.
 
 ![Azure_Variables](images/Azure_Variables.png)
 

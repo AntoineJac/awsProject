@@ -66,6 +66,7 @@ jobs:
           --parameter-overrides \
           JwtTokenSecretMC=$(MC_JWT_SECRET) \
           SmsApiGatewayKey=$(SMS_GATEWAY_KEY) \
+          SmsBulkApiGatewayKey=$(SMS_BULK_GATEWAY_KEY) \
           SmsApiConcurrency=$(SMS_API_CONCURRENCY) \
           SmsBulkApiConcurrency=$(SMS_BULK_API_CONCURRENCY) \
           SmsBulkApiBatchSize=$(SMS_BULK_API_BATCH_SIZE) \

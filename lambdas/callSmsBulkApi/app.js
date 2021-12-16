@@ -2,7 +2,7 @@
 const axios = require('axios');
 /* eslint-enable */
 
-const { SmsApiGatewayKey, EndpointBulkUrlSMS } = process.env;
+const { SmsBulkApiGatewayKey, EndpointBulkUrlSMS } = process.env;
 
 const templateSMS = {
   id: '',
@@ -62,7 +62,7 @@ const callAPI = async (paramsTemplateSMS) => {
     paramsTemplateSMS,
     {
       headers: {
-        'x-Gateway-APIKey': SmsApiGatewayKey,
+        'x-Gateway-APIKey': SmsBulkApiGatewayKeys,
       },
     })
     .then((response) => JSON.stringify({
