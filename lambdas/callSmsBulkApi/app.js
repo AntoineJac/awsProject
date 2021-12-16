@@ -62,7 +62,7 @@ const callAPI = async (paramsTemplateSMS) => {
     paramsTemplateSMS,
     {
       headers: {
-        'x-Gateway-APIKey': SmsBulkApiGatewayKeys,
+        'x-Gateway-APIKey': SmsBulkApiGatewayKey,
       },
     })
     .then((response) => JSON.stringify({
