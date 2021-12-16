@@ -36,9 +36,10 @@ const returnPayloadSms = (decoded) => {
 /* eslint-disable no-unused-vars */
 const sendSqsMessage = async (payloadSMS) => {
   const smsQueueUrlToUse = payloadSMS.isBulked === 'True' ? smsQueueBulkUrl : smsQueueUrl;
+  const payloadSmsStringify = JSON.stringify(payloadSMS);
   const params = {
     QueueUrl: smsQueueUrlToUse,
-    MessageBody: payloadSMS,
+    MessageBody: payloadSmsStringify,
   };
 
   return new Promise((resolve, reject) => {
@@ -57,8 +58,7 @@ const mcActivityExecute = async (decodeBase6JWT) => new Promise((resolve, reject
   utilsLayer.processMC(decodeBase6JWT)
     .then((decoded) => {
       if (decoded) {
-        let payloadSMS = returnPayloadSms(decoded);
-        payloadSMS = JSON.stringify(payloadSMS);
+        const payloadSMS = returnPayloadSms(decoded);
         sendSqsMessage(payloadSMS)
           .then((response) => {
             resolve({
