@@ -10,7 +10,8 @@ It includes the following ressources and folders.
 - images - Image for the repository Readme.
 - lambda - Folder for the application's Lambda functions.
 - lambda/CallSmsApi - Function triggered by the SQS Queue and used to call the SMS Api.
-- lambda/CallSmsBulkApi - Function triggered by the SQS Bulk Queue and used to call the SMS Bulk Api.
+- lambda/CallSmsBulkApi - Function triggered by the SQS Bulk Queue and used to call the standard SMS Bulk Api.
+- lambda/CallSmsBulkApiSmrt - Function triggered by the SQS Bulk Queue and used to call the Smart SMS Bulk Api.
 - lambda/ExecuteEntry - Function triggered by the API Gateway and used to send message the SQS Queue.
 - lambda/PublisheEntry - Function used by Maketing Cloud when validating the journey.
 - lambda/{{function}}/tests - Unit tests for the application code.
@@ -78,7 +79,16 @@ Lambda Function settings:
   - concurrency reserved: 150
   - SQS Queue Trigger:
     - Batch size: 50
-    - Batch window: 30 seconds
+    - Batch window: 20 seconds
+- CallSmsBulkApiSmrtFunction:
+  - Retry number: 1
+  - Retry timeout: 1 minute
+  - Timeout: 15 seconds
+  - memory: 128mb
+  - concurrency reserved: 150
+  - SQS Queue Trigger:
+    - Batch size: 50
+    - Batch window: 20 seconds
 - callSmsApiFunction:
   - Retry number: 1
   - Retry timeout: 1 minute
@@ -87,7 +97,7 @@ Lambda Function settings:
   - concurrency reserved: 150
   - SQS Queue Trigger:
     - Batch size: 1
-    - Batch window: 30 seconds
+    - Batch window: 10 seconds
 - executeFunction:
   - Retry number: 2
   - Retry timeout: 1 minute

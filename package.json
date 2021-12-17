@@ -7,13 +7,14 @@
   "license": "MIT",
   "scripts": {
     "git": "git add . && git add ./dependencies/nodejs/node_modules -f",
-    "testSaved": "mocha lambdas/executeEntry/tests/unit lambdas/callSmsApi/tests/unit lambdas/callSmsBulkApi/tests/unit",
+    "testSaved": "mocha lambdas/executeEntry/tests/unit lambdas/callSmsApi/tests/unit lambdas/callSmsBulkApi/tests/unit lambdas/callSmsBulkApiSmrt/tests/unit",
     "test": "echo \"Error: no test specified, used the testSaved scripts\"",
     "debug:api": "sam local start-api --debug-port 5000",
     "lambdaExecute": "sam local invoke ExecuteEntryFunction --event events/event_main.json",
     "lambdaPublish": "sam local invoke PublishEntryFunction --event events/event_main.json",
     "lambdaApi": "sam local invoke CallSmsApiFunction --event events/event_sms_api.json",
     "lambdaBulkApi": "sam local invoke CallSmsBulkApiFunction --event events/event_sms_bulk_api.json",
+    "lambdaBulkApiSmrt": "sam local invoke CallSmsBulkApiSmrtFunction --event events/event_sms_bulk_api.json",
     "lint": "eslint ./ --ignore-pattern public/"
   },
   "devDependencies": {

@@ -97,6 +97,18 @@ Resources:
             - 'SmsBulkDeadQueue'
             - 'Arn'
         maxReceiveCount: 2
+  SmsBulkSmrtApiQueue: 
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub '${AWS::StackName}-SmsBulkSmrtApiQueue'
+      VisibilityTimeout: 60
+      ReceiveMessageWaitTimeSeconds: 20
+      RedrivePolicy:
+        deadLetterTargetArn:
+          Fn::GetAtt: 
+            - 'SmsBulkDeadQueue'
+            - 'Arn'
+        maxReceiveCount: 2
   ExecuteEntryFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -115,6 +127,7 @@ Resources:
           MCSecret: !Ref JwtTokenSecretMC
           smsQueueUrl: !Ref SmsApiQueue
           smsQueueBulkUrl: !Ref SmsBulkApiQueue
+          smsSmrtQueueBulkUrl: !Ref SmsBulkSmrtApiQueue
       CodeUri: lambdas/executeEntry/
       Handler: app.lambdaHandler
       Layers:
@@ -222,7 +235,39 @@ Resources:
               Fn::GetAtt: 
                 - 'SmsBulkApiQueue'
                 - 'Arn'
-            MaximumBatchingWindowInSeconds: 30
+            MaximumBatchingWindowInSeconds: 20
+            BatchSize: !Ref SmsBulkApiBatchSize
+  CallSmsBulkApiSmrtFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-CallSmsBulkApiSmrtFunction'
+      Timeout: 15
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - 'sqs:ReceiveMessage'
+              Resource:
+                - '*'
+      Environment:
+        Variables:
+          SmsBulkApiGatewayKey: !Ref SmsBulkApiGatewayKey
+          EndpointBulkUrlSMS: !Ref EndpointBulkUrlSMS
+      CodeUri: lambdas/callSmsBulkApiSmrt/
+      Handler: app.lambdaHandler
+      ReservedConcurrentExecutions: !Ref SmsBulkApiConcurrency
+      EventInvokeConfig:
+        MaximumEventAgeInSeconds: 300
+        MaximumRetryAttempts: 1
+      Events:
+        MySQSEvent:
+          Type: SQS
+          Properties:
+            Queue: 
+              Fn::GetAtt: 
+                - 'SmsBulkSmrtApiQueue'
+                - 'Arn'
+            MaximumBatchingWindowInSeconds: 20
             BatchSize: !Ref SmsBulkApiBatchSize
   JsonWebTokenLayer:
         Type: AWS::Serverless::LayerVersion
@@ -271,6 +316,9 @@ Outputs:
   SmsBulkApiQueue:
     Description: 'SMS Bulk API Queue ARN'
     Value: !GetAtt SmsBulkApiQueue.Arn    
+  SmsBulkSmrtApiQueue:
+    Description: 'SMS Bulk Smart API Queue ARN'
+    Value: !GetAtt SmsBulkSmrtApiQueue.Arn   
   SmsDeadQueue:
     Description: 'SMS API Dead Queue ARN'
     Value: !GetAtt SmsDeadQueue.Arn

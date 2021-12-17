@@ -72,7 +72,7 @@ const replaceTemplate = (data) => {
   templateSMS.messageType = data.messageChannel;
   templateSMS.template = data.messageTemplate;
   templateSMS.priority = data.priority;
-  templateSMS.isSensitive = data.isSensitive;
+  templateSMS.isSensitive = data.isSensitive === 'True';
   templateSMS.characteristic = data.characteristic;
   templateSMS.searchIndexes = data.searchIndexes;
   templateSMS.receiver[0].id = data.ContactKey;
