@@ -2,8 +2,7 @@
 const axios = require('axios');
 /* eslint-enable */
 
-const { SmsBulkApiGatewayKey } = process.env;
-const EndpointBulkUrlSMS = 'https://webhook.site/8ddbc7fd-be86-4179-8000-747e34fd8298';
+const { SmsBulkApiGatewayKey, EndpointBulkUrlSMS } = process.env;
 
 const templateSMS = {
   id: '',
