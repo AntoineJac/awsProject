@@ -73,16 +73,19 @@ const callAPI = async (paramsTemplateSMS) => {
 };
 
 const replaceTemplateSMS = (data, recordsLength) => {
+  const templateSMSCopy = JSON.parse(JSON.stringify(templateSMS));
   const numCharctArray = (data.id.match(/_/g) || []).length - 1;
   const batchId = data.id.split('_')
     .slice(0, numCharctArray)
     .join('_') || data.id;
 
-  templateSMS.id = generateUUID();
-  templateSMS.batchId = `batchId${batchId}`;
-  templateSMS.numRecords = recordsLength;
-  templateSMS.messageType = data.messageChannel;
-  templateSMS.sender.party.name = !data.senderName ? 'MultiChoice' : data.senderName;
+  templateSMSCopy.id = generateUUID();
+  templateSMSCopy.batchId = `batchId${batchId}`;
+  templateSMSCopy.numRecords = recordsLength;
+  templateSMSCopy.messageType = data.messageChannel;
+  templateSMSCopy.sender.party.name = !data.senderName ? 'MultiChoice' : data.senderName;
+
+  return templateSMSCopy;
 };
 
 const replaceTemplateMessage = (recordData) => {
@@ -103,14 +106,14 @@ const replaceTemplateMessage = (recordData) => {
 };
 
 const replaceTemplate = (records) => {
-  replaceTemplateSMS(JSON.parse(records[0].body), records.length);
+  const templateSMSPayload = replaceTemplateSMS(JSON.parse(records[0].body), records.length);
 
   records.forEach((record) => {
     const templateMessageIndex = replaceTemplateMessage(JSON.parse(record.body));
-    templateSMS.communicationMessages.push(templateMessageIndex);
+    templateSMSPayload.communicationMessages.push(templateMessageIndex);
   });
 
-  return templateSMS;
+  return templateSMSPayload;
 };
 
 exports.lambdaHandler = async (event, context, callback) => {
