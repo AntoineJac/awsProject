@@ -73,6 +73,11 @@ Resources:
     Properties:
       QueueName: !Sub '${AWS::StackName}-SmsBulkDeadQueue'
       ReceiveMessageWaitTimeSeconds: 20
+  SmsSmrtBulkDeadQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub '${AWS::StackName}-SmsSmrtBulkDeadQueue'
+      ReceiveMessageWaitTimeSeconds: 20
   SmsApiQueue: 
     Type: AWS::SQS::Queue
     Properties:
@@ -106,7 +111,7 @@ Resources:
       RedrivePolicy:
         deadLetterTargetArn:
           Fn::GetAtt: 
-            - 'SmsBulkDeadQueue'
+            - 'SmsSmrtBulkDeadQueue'
             - 'Arn'
         maxReceiveCount: 2
   ExecuteEntryFunction:
@@ -325,3 +330,6 @@ Outputs:
   SmsBulkDeadQueue:
     Description: 'SMS Bulk API Dead Queue ARN'
     Value: !GetAtt SmsBulkDeadQueue.Arn
+  SmsSmrtBulkDeadQueue:
+    Description: 'SMS Bulk API Dead Queue ARN'
+    Value: !GetAtt SmsSmrtBulkDeadQueue.Arn
