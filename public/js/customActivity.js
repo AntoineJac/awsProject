@@ -436,8 +436,12 @@ define(['postmonger'], (Postmonger) => {
       messageObject.mobileCountryCode = `{{Event.${eventDefinitionKey}.smartCountryCode}}`;
       messageObject.messageChannel = 'S2MS';
       messageObject.messageTemplate = messageTemplate;
-      messageObject.characteristic = characteristic;
-      messageObject.searchIndexes = searchIndexes;
+      if (characteristic.length) {
+        messageObject.characteristic = characteristic;
+      }
+      if (searchIndexes.length) {
+        messageObject.searchIndexes = searchIndexes;
+      }
     } else {
       messageObject.messageChannel = messageChannel;
       messageObject.mobileCountryCode = `{{Event.${eventDefinitionKey}.mobileCountryCode}}`;
