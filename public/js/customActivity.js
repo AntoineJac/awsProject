@@ -296,6 +296,18 @@ define(['postmonger'], (Postmonger) => {
       .trim();
   }
 
+  function getCategoryValue() {
+    return $('#Category')
+      .val()
+      .trim();
+  }
+
+  function getSubCategoryValue() {
+    return $('#subCategory')
+      .val()
+      .trim();
+  }
+
   function getTemplateValue() {
     return $('#messageTemplate')
       .val()
@@ -424,6 +436,16 @@ define(['postmonger'], (Postmonger) => {
 
   $('#senderName').keyup(() => {
     senderName = getSenderNameValue();
+    updateNextButton(isStepOneValid());
+  });
+
+  $('#category').keyup(() => {
+    category = getCategoryValue();
+    updateNextButton(isStepOneValid());
+  });
+
+  $('#subcategory').keyup(() => {
+    subCategory = getSubCategoryValue();
     updateNextButton(isStepOneValid());
   });
 
