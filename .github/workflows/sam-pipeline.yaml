@@ -1,5 +1,6 @@
 env:
-  AWS_STACK_NAME: ${{ secrets.AWS_STACK_NAME }}
+  AWS_STACK_NAME_PROD: ${{ secrets.AWS_STACK_NAME_PROD }}
+  AWS_STACK_NAME_UAT: ${{ secrets.AWS_STACK_NAME_UAT }}
   AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
   AWS_BUCKET_NAME_PUBLIC: ${{ secrets.AWS_BUCKET_NAME_PUBLIC }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -11,8 +12,10 @@ env:
   SMS_API_CONCURRENCY: ${{ secrets.SMS_API_CONCURRENCY }}
   SMS_BULK_API_CONCURRENCY: ${{ secrets.SMS_BULK_API_CONCURRENCY }}
   SMS_BULK_API_BATCH_SIZE: ${{ secrets.SMS_BULK_API_BATCH_SIZE }}
-  ENDPOINT_URL_SMS: ${{ secrets.ENDPOINT_URL_SMS }}
-  ENDPOINT_BULK_URL_SMS: ${{ secrets.ENDPOINT_BULK_URL_SMS }}
+  ENDPOINT_URL_SMS_PROD: ${{ secrets.ENDPOINT_URL_SMS_PROD }}
+  ENDPOINT_URL_SMS_UAT: ${{ secrets.ENDPOINT_URL_SMS_UAT }}
+  ENDPOINT_BULK_URL_SMS_PROD: ${{ secrets.ENDPOINT_BULK_URL_SMS_PROD }}
+  ENDPOINT_BULK_URL_SMS_UAT: ${{ secrets.ENDPOINT_BULK_URL_SMS_UAT }}
 
 on:
   push:
@@ -27,10 +30,17 @@ jobs:
         if: endsWith(github.ref, '/test')
         run: |
           echo "CA_NAME=UAT" >> $GITHUB_ENV
+          echo "AWS_STACK_NAME=${{ env.AWS_STACK_NAME_UAT }}" >> $GITHUB_ENV
+          echo "ENDPOINT_URL_SMS=${{ env.ENDPOINT_URL_SMS_UAT }}" >> $GITHUB_ENV
+          echo "ENDPOINT_BULK_URL_SMS=${{ env.ENDPOINT_BULK_URL_SMS_UAT }}" >> $GITHUB_ENV
       - name: Set env to production
         if: endsWith(github.ref, '/main')
         run: |
           echo "CA_NAME=PROD" >> $GITHUB_ENV
+          echo "AWS_STACK_NAME=${{ env.AWS_STACK_NAME_PROD }}" >> $GITHUB_ENV
+          echo "ENDPOINT_URL_SMS=${{ env.ENDPOINT_URL_SMS_PROD }}" >> $GITHUB_ENV
+          echo "ENDPOINT_URL_SMS=${{ env.ENDPOINT_URL_SMS_PROD }}" >> $GITHUB_ENV
+          echo "ENDPOINT_BULK_URL_SMS=${{ env.ENDPOINT_BULK_URL_SMS_PROD }}" >> $GITHUB_ENV
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
