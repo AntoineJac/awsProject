@@ -297,7 +297,7 @@ define(['postmonger'], (Postmonger) => {
   }
 
   function getCategoryValue() {
-    return $('#Category')
+    return $('#category')
       .val()
       .trim();
   }
