@@ -21,6 +21,8 @@ define(['postmonger'], (Postmonger) => {
   let messageContent = '';
   let messageChannel = '';
   let senderName = '';
+  let category = '';
+  let subCategory = '';
   let priority = '';
   let isSensitive = '';
   let isBulked = '';
@@ -139,7 +141,7 @@ define(['postmonger'], (Postmonger) => {
   // retrieves the existing configuration of the CA on initialization
   function init(data) {
     payload = data;
-    nodeName = payload.name.replace(/\s+/g, '-');
+    nodeName = payload.name.replace(/\s+/g, '_');
 
     const hasInArguments = Boolean(
       payload.arguments
@@ -153,6 +155,8 @@ define(['postmonger'], (Postmonger) => {
       messageContent = args.messageContent;
       messageChannel = args.messageChannel;
       senderName = args.senderName;
+      category = args.category;
+      subCategory = args.subCategory;
       priority = args.priority;
       isSensitive = args.isSensitive;
       isBulked = args.isBulked;
@@ -165,6 +169,8 @@ define(['postmonger'], (Postmonger) => {
       $('#messageContent').val(messageContent);
       $('#messageChannel').val(messageChannel);
       $('#senderName').val(senderName);
+      $('#category').val(category);
+      $('#subCategory').val(subCategory);
       $('#priority').val(priority);
       $('#isSensitive').val(isSensitive);
       $('#isBulked').val(isBulked);
@@ -183,7 +189,7 @@ define(['postmonger'], (Postmonger) => {
   // retrieves the dataExtensionKey and eventDefinitionKey on initialization
   function onRequestedTriggerEventDefinition(eventDefinitionModel) {
     if (eventDefinitionModel) {
-      journeyName = eventDefinitionModel.name.replace(/\s+/g, '-');
+      journeyName = eventDefinitionModel.name.replace(/\s+/g, '_');
       if (eventDefinitionModel.dataExtensionId) {
         eventDefinitionKey = eventDefinitionModel.eventDefinitionKey;
       } else {
@@ -250,7 +256,7 @@ define(['postmonger'], (Postmonger) => {
     return (
       isValidValue(messageContent) && isValidValue(messageChannel) && isValidValue(senderName)
                 && isValidValue(priority) && isValidValue(isSensitive) && isValidValue(isBulked)
-                && prepareCharacteristic() && prepareSearchIndexes()
+                && prepareCharacteristic() && prepareSearchIndexes() && checkIdValueLength()
     );
   }
 
@@ -306,6 +312,21 @@ define(['postmonger'], (Postmonger) => {
     return $('#searchIndexes')
       .val()
       .trim();
+  }
+
+  function checkIdValueLength() {
+    if ((journeyName+nodeName).length < 70) {
+      $('#notify').hide();
+      return true;
+    }
+    else {
+      $('#notify').addClass('notifyActive');
+      $('#notify').show();
+      $('#notify').text(
+        'Your journey name and activity name are over 80 characters, please fix to continue',
+      );
+      return false;
+    }
   }
 
   function prepareCharacteristic() {
@@ -423,11 +444,13 @@ define(['postmonger'], (Postmonger) => {
   function setReviewPageVariables() {
     messageObject = {};
     // messageObject['id'] = `{{Event.${eventDefinitionKey}.id}}`;
-    messageObject.id = `${journeyName}_${nodeName}_` + '{{Contact.Key}}';
+    messageObject.id = `${journeyName}|${nodeName}|${category}|${subCategory}|` + '{{Contact.Key}}';
     messageObject.mobileNumber = `{{Event.${eventDefinitionKey}.mobileNumber}}`;
     messageObject.ContactKey = '{{Contact.Key}}';
     messageObject.messageContent = messageContent;
     messageObject.senderName = senderName;
+    messageObject.category = category;
+    messageObject.subCategory = subCategory;
     messageObject.priority = priority;
     messageObject.isSensitive = isSensitive;
     messageObject.isBulked = isBulked;
@@ -448,10 +471,10 @@ define(['postmonger'], (Postmonger) => {
     }
 
     if (isBulked == 'True') {
-      const numCharctArray = (messageObject.id.match(/_/g) || []).length - 1;
-      const batchId = messageObject.id.split('_')
+      const numCharctArray = (messageObject.id.match(/|/g) || []).length - 1;
+      const batchId = messageObject.id.split('|')
         .slice(0, numCharctArray)
-        .join('_') || messageObject.id;
+        .join('|') || messageObject.id;
       templateBulkSMS.id = 'f924315e-79d8-429d-ab3c-ae9704a0f006';
       templateBulkSMS.batchId = batchId;
       templateBulkSMS.messageType = messageObject.messageChannel;
@@ -486,7 +509,7 @@ define(['postmonger'], (Postmonger) => {
     }
   }
 
-  // saves the Custom Activity inarguments which will be referenced during journey run-time
+  // saves the Custom Activity inarguments which will be referenced during journey runtime
   function onActivityComplete() {
     payload.arguments.execute.inArguments.length = 0;
     payload.arguments.execute.inArguments.push(messageObject);
