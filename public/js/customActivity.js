@@ -323,7 +323,7 @@ define(['postmonger'], (Postmonger) => {
       $('#notify').addClass('notifyActive');
       $('#notify').show();
       $('#notify').text(
-        'Your journey name and activity name are over 80 characters, please fix to continue',
+        'Your journey name and activity name are over 70 characters, please fix to continue',
       );
       return false;
     }
