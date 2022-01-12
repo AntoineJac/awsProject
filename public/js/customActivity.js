@@ -444,7 +444,7 @@ define(['postmonger'], (Postmonger) => {
     updateNextButton(isStepOneValid());
   });
 
-  $('#subcategory').keyup(() => {
+  $('#subCategory').keyup(() => {
     subCategory = getSubCategoryValue();
     updateNextButton(isStepOneValid());
   });
