@@ -138,7 +138,6 @@ define(['postmonger'], (Postmonger) => {
   }
 
   // retrieves the existing configuration of the CA on initialization
-  // retrieves the existing configuration of the CA on initialization
   function init(data) {
     payload = data;
     nodeName = payload.name.replace(/\s+/g, '_');
@@ -200,6 +199,7 @@ define(['postmonger'], (Postmonger) => {
         );
       }
     }
+    updateNextButton(isStepOneValid());
   }
 
   /** CONTROLS RELATED* */
@@ -327,7 +327,7 @@ define(['postmonger'], (Postmonger) => {
   }
 
   function checkIdValueLength() {
-    if ((journeyName+nodeName).length < 70) {
+    if ((journeyName+nodeName+category+subCategory).length < 130) {
       $('#notify').hide();
       return true;
     }
@@ -335,7 +335,7 @@ define(['postmonger'], (Postmonger) => {
       $('#notify').addClass('notifyActive');
       $('#notify').show();
       $('#notify').text(
-        'Your journey name and activity name are over 70 characters, please fix to continue',
+        'Your journey name, activity name, category and sub category are over 130 characters, please fix to continue',
       );
       return false;
     }
