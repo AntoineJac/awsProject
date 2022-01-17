@@ -477,16 +477,18 @@ define(['postmonger'], (Postmonger) => {
     messageObject.isSensitive = isSensitive;
     messageObject.isBulked = isBulked;
 
+    if (characteristic.length) {
+      messageObject.characteristic = characteristic;
+    }
+
+    if (searchIndexes.length) {
+      messageObject.searchIndexes = searchIndexes;
+    }
+
     if (messageChannel == 'S2MS') {
       messageObject.mobileCountryCode = `{{Event.${eventDefinitionKey}.smartCountryCode}}`;
       messageObject.messageChannel = 'S2MS';
       messageObject.messageTemplate = messageTemplate;
-      if (characteristic.length) {
-        messageObject.characteristic = characteristic;
-      }
-      if (searchIndexes.length) {
-        messageObject.searchIndexes = searchIndexes;
-      }
     } else {
       messageObject.messageChannel = messageChannel;
       messageObject.mobileCountryCode = `{{Event.${eventDefinitionKey}.mobileCountryCode}}`;
