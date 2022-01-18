@@ -177,13 +177,14 @@ define(['postmonger'], (Postmonger) => {
       $('#characteristic').val(characteristic);
       $('#searchIndexes').val(searchIndexes);
 
-      messageChannel == 'S2MS'
-        ? $('#smart_template_fields').show()
-        : $('#smart_template_fields').hide();
-
-      isBulked == 'True'
-        ? $('#bulk_template_fields').show()
-        : $('#bulk_template_fields').hide();
+      if (messageChannel == 'S2MS') {
+        $('#smart_template_fields').show(); 
+        $('#bulk_template_fields').show()
+      }
+      
+      if (isBulked == 'True') {
+        $('#bulk_template_fields').show()
+      }
 
       updateNextButton(isStepOneValid());
     }
@@ -408,9 +409,15 @@ define(['postmonger'], (Postmonger) => {
 
   $('#messageChannel').change(() => {
     messageChannel = getChannelValue();
-    messageChannel == 'S2MS'
-      ? $('#smart_template_fields').show()
-      : $('#smart_template_fields').hide();
+    if (messageChannel == 'S2MS') {
+      $('#smart_template_fields').show(); 
+      $('#bulk_template_fields').show()
+    } else if (isBulked == 'True') {
+      $('#smart_template_fields').hide();
+    } else {
+      $('#smart_template_fields').hide(); 
+      $('#bulk_template_fields').hide()
+    }
     updateNextButton(isStepOneValid());
   });
 
@@ -426,9 +433,11 @@ define(['postmonger'], (Postmonger) => {
 
   $('#isBulked').change(() => {
     isBulked = getIsBulkedValue();
-    isBulked == 'True'
-    ? $('#bulk_template_fields').show()
-    : $('#bulk_template_fields').hide();
+    if (isBulked == 'True') {
+      $('#bulk_template_fields').show()
+    } else if (messageChannel !== 'S2MS') {
+      $('#bulk_template_fields').hide();
+    }
     updateNextButton(isStepOneValid());
   });
 
