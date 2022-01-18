@@ -181,6 +181,10 @@ define(['postmonger'], (Postmonger) => {
         ? $('#smart_template_fields').show()
         : $('#smart_template_fields').hide();
 
+      isBulked == 'True'
+        ? $('#bulk_template_fields').show()
+        : $('#bulk_template_fields').hide();
+
       updateNextButton(isStepOneValid());
     }
   }
@@ -422,6 +426,9 @@ define(['postmonger'], (Postmonger) => {
 
   $('#isBulked').change(() => {
     isBulked = getIsBulkedValue();
+    isBulked == 'True'
+    ? $('#bulk_template_fields').show()
+    : $('#bulk_template_fields').hide();
     updateNextButton(isStepOneValid());
   });
 
