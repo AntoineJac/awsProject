@@ -493,12 +493,14 @@ define(['postmonger'], (Postmonger) => {
     messageObject.isSensitive = isSensitive;
     messageObject.isBulked = isBulked;
 
-    if (characteristic.length) {
-      messageObject.characteristic = characteristic;
-    }
+    if (messageChannel == 'S2MS' || isBulked == 'True') {
+      if (characteristic.length) {
+        messageObject.characteristic = characteristic;
+      }
 
-    if (searchIndexes.length) {
-      messageObject.searchIndexes = searchIndexes;
+      if (searchIndexes.length) {
+        messageObject.searchIndexes = searchIndexes;
+      }
     }
 
     if (messageChannel == 'S2MS') {
