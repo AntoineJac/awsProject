@@ -513,12 +513,8 @@ define(['postmonger'], (Postmonger) => {
     }
 
     if (isBulked == 'True') {
-      const numCharctArray = (messageObject.id.match(/|/g) || []).length - 1;
-      const batchId = messageObject.id.split('|')
-        .slice(0, numCharctArray)
-        .join('|') || messageObject.id;
-      templateBulkSMS.id = 'f924315e-79d8-429d-ab3c-ae9704a0f006';
-      templateBulkSMS.batchId = batchId;
+      templateBulkSMS.id = 'f924315e-79d8-429d-ab3c-ae9704a0f001';
+      templateBulkSMS.batchId = 'f924315e-79d8-429d-ab3c-ae9704a0f002';
       templateBulkSMS.messageType = messageObject.messageChannel;
       templateBulkSMS.sender.party.name = messageObject.senderName;
       templateBulkSMS.communicationMessages[0].id = messageObject.id;

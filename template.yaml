@@ -61,8 +61,8 @@ Resources:
     Type: AWS::Serverless::HttpApi
     Properties:
       DefaultRouteSettings:
-        ThrottlingBurstLimit: 150 #Set to 150 conccurent request
-        ThrottlingRateLimit: 1000 #Set to 1000 qps => 3.6m by hour
+        ThrottlingBurstLimit: 750 #Set to 750 concurrent requests
+        ThrottlingRateLimit: 1500 #Set to 1500 qps => 5.4m by hour
   SmsDeadQueue:
     Type: AWS::SQS::Queue
     Properties:

@@ -74,13 +74,9 @@ const callAPI = async (paramsTemplateSMS) => {
 
 const replaceTemplateSMS = (data, recordsLength) => {
   const templateSMSCopy = JSON.parse(JSON.stringify(templateSMS));
-  const numCharctArray = (data.id.match(/_/g) || []).length - 1;
-  const batchId = data.id.split('_')
-    .slice(0, numCharctArray)
-    .join('_') || data.id;
 
   templateSMSCopy.id = generateUUID();
-  templateSMSCopy.batchId = `batchId${batchId}`;
+  templateSMSCopy.batchId = generateUUID();
   templateSMSCopy.numRecords = recordsLength;
   templateSMSCopy.messageType = data.messageChannel;
   templateSMSCopy.sender.party.name = !data.senderName ? 'MultiChoice' : data.senderName;
