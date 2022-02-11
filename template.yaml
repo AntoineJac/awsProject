@@ -182,7 +182,7 @@ Resources:
     Type: AWS::Serverless::Function 
     Properties:
       FunctionName: !Sub '${AWS::StackName}-CallSmsApiFunction'
-      Timeout: 15
+      Timeout: 60
       Policies:
         - Statement:
             - Effect: Allow
@@ -214,7 +214,7 @@ Resources:
     Type: AWS::Serverless::Function 
     Properties:
       FunctionName: !Sub '${AWS::StackName}-CallSmsBulkApiFunction'
-      Timeout: 15
+      Timeout: 60
       Policies:
         - Statement:
             - Effect: Allow
@@ -246,7 +246,7 @@ Resources:
     Type: AWS::Serverless::Function 
     Properties:
       FunctionName: !Sub '${AWS::StackName}-CallSmsBulkApiSmrtFunction'
-      Timeout: 15
+      Timeout: 60
       Policies:
         - Statement:
             - Effect: Allow
