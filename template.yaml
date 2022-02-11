@@ -231,7 +231,7 @@ Resources:
       ReservedConcurrentExecutions: !Ref SmsBulkApiConcurrency
       EventInvokeConfig:
         MaximumEventAgeInSeconds: 300
-        MaximumRetryAttempts: 1
+        MaximumRetryAttempts: 0
       Events:
         MySQSEvent:
           Type: SQS
@@ -263,7 +263,7 @@ Resources:
       ReservedConcurrentExecutions: !Ref SmsBulkApiConcurrency
       EventInvokeConfig:
         MaximumEventAgeInSeconds: 300
-        MaximumRetryAttempts: 1
+        MaximumRetryAttempts: 0
       Events:
         MySQSEvent:
           Type: SQS
